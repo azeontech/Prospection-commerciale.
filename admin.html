@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FIAUSSÉ — Espace Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--p:#0ea5e9;--pd:#0284c7;--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#64748b;--border:#dbe3ee}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;padding:22px 16px}
+.wrap{max-width:1100px;margin:auto;padding:0 16px}.brand{font-size:24px;font-weight:800}.sub{margin-top:5px;font-size:14px;opacity:.9}
+.card,.shop,.stat,.empty{background:#fff;border:1px solid var(--border);border-radius:14px}.card{padding:20px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:15px;background:#fff;border:1px solid var(--border);border-radius:14px}.num{font-size:25px;font-weight:900}.lbl{font-size:13px;color:var(--muted)}
+.toolbar{display:flex;gap:10px;margin-bottom:15px}.toolbar input{flex:1;padding:12px;border:1px solid var(--border);border-radius:9px}
+.btn,.small{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}.btn.secondary{background:#e8eef5;color:var(--text)}.btn.danger{background:#fee2e2;color:#991b1b}
+.shop-list{display:grid;gap:12px}
+.shop{padding:16px;background:#fff;border:1px solid var(--border);border-radius:14px;cursor:pointer}
+.head{display:flex;justify-content:space-between;align-items:center}.name{font-size:17px;font-weight:900}.meta{color:var(--muted);font-size:13px}
+.shop-body{display:none;border-top:1px solid var(--border);margin-top:13px;padding-top:13px}
+.shop.open .shop-body{display:block}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px}
+.detail strong{display:block;font-size:12px;color:var(--muted)}.notes{margin-top:10px;padding:10px;background:#f8fafc;border-radius:8px;font-size:13px}
+.shop-photo{width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:12px}
+.badge{padding:4px 8px;border-radius:6px;font-size:12px;font-weight:bold;background:#e2e8f0}
+@media(max-width:700px){.stats,.details{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">FIAUSSÉ — Administration</div><div class="sub">Tableau de bord et suivi des réponses boutiques</div></div></header>
+
+<main class="wrap">
+<div class="stats">
+  <div class="stat"><div id="total" class="num">0</div><div class="lbl">Boutiques répondues</div></div>
+  <div class="stat"><div id="recent" class="num">0</div><div class="lbl">Aujourd'hui</div></div>
+</div>
+
+<div class="toolbar">
+<input id="search" placeholder="Rechercher une boutique, un problème, une ville...">
+<button id="export" class="btn secondary" type="button">Exporter CSV</button>
+</div>
+
+<div id="list" class="shop-list"></div>
+</main>
+
+<script>
+(function(){
+"use strict";
+var SUPABASE_URL = "https://jbxebdpurxeojyjcprpg.supabase.co";
+var SUPABASE_KEY = "COLLE_TA_CLE_PUBLIABLE_ICI"; // <-- Mettre la clé publiable ici
+
+var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var shops = [];
+var $ = function(id){return document.getElementById(id);};
+
+async function load(){
+  var res = await sb.from("boutiques").select("*").order("created_at", { ascending: false });
+  if(!res.error){ shops = res.data || []; render(); }
+}
+
+function render(){
+  $("total").textContent = shops.length;
+  var today = new Date().toISOString().split('T')[0];
+  $("recent").textContent = shops.filter(x => x.date === today).length;
+
+  var q = $("search").value.toLowerCase();
+  var data = shops.filter(x => !q || JSON.stringify(x).toLowerCase().includes(q));
+
+  if(!data.length){ $("list").innerHTML = '<div class="card">Aucune boutique enregistrée.</div>'; return; }
+
+  $("list").innerHTML = data.map(x => `
+    <article class="shop" id="shop-${x.id}" onclick="document.getElementById('shop-${x.id}').classList.toggle('open')">
+      <div class="head">
+        <div>
+          <div class="name">${x.name || 'Sans nom'}</div>
+          <div class="meta">📍 ${x.location || '—'} | 👤 ${x.manager || '—'} (${x.phone || '—'})</div>
+        </div>
+        <span class="badge">${x.category || 'Général'}</span>
+      </div>
+      <div class="shop-body">
+        ${x.photo ? `<img src="${x.photo}" class="shop-photo">` : ''}
+        <div class="details">
+          <div class="detail"><strong>Canal de vente :</strong>${x.canaux_vente || '—'}</div>
+          <div class="detail"><strong>GPS :</strong>${x.gps ? `<a href="https://maps.google.com/?q=${x.gps}" target="_blank">🗺️ Voir sur la carte</a>` : '—'}</div>
+        </div>
+        <div class="notes"><strong>🚨 Difficultés rencontrées :</strong><br>${x.principales_difficultes || 'Non renseigné'}</div>
+        <div class="notes"><strong>🎯 Besoin principal :</strong><br>${x.besoin_principal || 'Non renseigné'}</div>
+      </div>
+    </article>
+  `).join("");
+}
+
+$("search").oninput = render;
+$("export").onclick = function(){
+  var csv = "\ufeff" + "Nom;Gérant;Téléphone;Quartier;Catégorie;Difficultés;Besoins\n" + 
+    shops.map(x => `"${x.name}";"${x.manager}";"${x.phone}";"${x.location}";"${x.category}";"${x.principales_difficultes}";"${x.besoin_principal}"`).join("\n");
+  var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], {type: "text/csv"}));
+  a.download = "reponses_boutiques.csv"; a.click();
+};
+
+load();
+})();
+</script>
+</body>
+</html>
