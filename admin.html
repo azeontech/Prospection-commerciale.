@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FIAUSSÉ — Espace Admin & Statistiques</title>
+  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -65,8 +66,30 @@ header{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;padding:22p
 
 <div id="list" class="shop-list"></div>
 </main>
-
+     
 <script>
+ // --- PROTECTION DE LA PAGE ADMIN ---
+(function protogerAdmin() {
+  // Définis ici le mot de passe souhaité pour l'administration
+  var MOT_DE_PASSE_CORRECT = "MonMotDePasseSecret123!"; 
+
+  // Vérifie si l'utilisateur s'est déjà connecté durant cette session
+  var sessionAutorisee = sessionStorage.getItem("admin_authentifie");
+
+  if (sessionAutorisee !== "true") {
+    var motDePasseSaisi = prompt("Accès restreint. Veuillez saisir le mot de passe Administrateur :");
+
+    if (motDePasseSaisi === MOT_DE_PASSE_CORRECT) {
+      sessionStorage.setItem("admin_authentifie", "true");
+      alert("Accès accordé.");
+    } else {
+      alert("Mot de passe incorrect ! Redirection en cours...");
+      // Redirige immédiatement l'utilisateur vers la page publique d'accueil
+      window.location.href = "index.html";
+    }
+  }
+})(); 
+  
 (function(){
 "use strict";
 var SUPABASE_URL = "https://jbxebdpurxeojyjcprpg.supabase.co";
