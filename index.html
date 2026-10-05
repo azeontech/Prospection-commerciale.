@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FIAUSSÉ — Suivi des boutiques</title>
-<!-- 1. Importation du SDK Supabase -->
+<!-- Supabase SDK & Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{--p:#0ea5e9;--pd:#0284c7;--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#64748b;--border:#dbe3ee}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
@@ -19,11 +20,33 @@ label{font-size:14px;font-weight:700}input,select,textarea{width:100%;padding:12
 .actions,.toolbar,.shop-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.btn{display:inline-block}
 .notice{display:none;padding:12px 14px;margin:16px 0;border-radius:9px;font-weight:700}.notice.show{display:block}.ok{background:#dcfce7;color:#166534}.err{background:#fee2e2;color:#991b1b}
 .hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}.stat{padding:15px}.num{font-size:25px;font-weight:900}.lbl{font-size:13px;color:var(--muted)}
-.toolbar{margin-top:0}.toolbar input{flex:1;min-width:220px}.shop-list{display:grid;gap:12px}.shop{padding:16px}.head{display:flex;justify-content:space-between;gap:12px}.name{font-size:18px;font-weight:900}.meta{color:var(--muted);font-size:13px;margin-top:4px}
-.badge{padding:6px 9px;border-radius:999px;font-size:12px;font-weight:800;background:#dbeafe;color:#1d4ed8;height:max-content}.green{background:#dcfce7;color:#166534}.orange{background:#ffedd5;color:#9a3412}.red{background:#fee2e2;color:#991b1b}
-.details{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-top:13px;font-size:14px}.detail strong{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}.notes{border-top:1px solid var(--border);margin-top:13px;padding-top:13px;white-space:pre-wrap;font-size:14px}.empty{text-align:center;padding:45px 20px;color:var(--muted)}
+
+/* Graphique */
+.analytics-container{display:grid;grid-template-columns:1fr 300px;gap:15px;margin-bottom:15px;align-items:center}
+.chart-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:15px;display:flex;flex-direction:column;align-items:center}
+.chart-box h3{margin:0 0 10px 0;font-size:15px;color:var(--text)}
+.chart-wrapper{width:100%;max-width:220px;height:220px}
+
+/* Accordéon / Boutiques déroulables */
+.toolbar{margin-top:0}.toolbar input{flex:1;min-width:220px}.shop-list{display:grid;gap:12px}
+.shop{padding:16px;cursor:pointer;transition:background-color .2s}
+.shop:hover{background-color:#f8fafc}
+.head{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.name{font-size:17px;font-weight:900}
+.meta{color:var(--muted);font-size:13px;margin-top:2px}
+.badge{padding:6px 9px;border-radius:999px;font-size:12px;font-weight:800;background:#dbeafe;color:#1d4ed8;height:max-content}
+.green{background:#dcfce7;color:#166534}.orange{background:#ffedd5;color:#9a3412}.red{background:#fee2e2;color:#991b1b}
+.toggle-icon{font-size:12px;color:var(--muted);margin-left:8px}
+
+.shop-body{display:none;border-top:1px solid var(--border);margin-top:13px;padding-top:13px}
+.shop.open .shop-body{display:block}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;font-size:14px}
+.detail strong{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
+.notes{margin-top:13px;padding-top:10px;border-top:1px dashed var(--border);white-space:pre-wrap;font-size:14px}
+.empty{text-align:center;padding:45px 20px;color:var(--muted)}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
-@media(max-width:700px){.grid,.details,.stats{grid-template-columns:1fr}.full{grid-column:auto}.head{flex-direction:column}}
+
+@media(max-width:700px){.grid,.details,.stats,.analytics-container{grid-template-columns:1fr}.full{grid-column:auto}.head{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
@@ -62,12 +85,19 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
 </section>
 
 <section id="listView" class="hidden">
-<div class="stats">
-<div class="stat"><div id="total" class="num">0</div><div class="lbl">Boutiques</div></div>
-<div class="stat"><div id="interested" class="num">0</div><div class="lbl">Intéressées</div></div>
-<div class="stat"><div id="tests" class="num">0</div><div class="lbl">Prêtes pour un test</div></div>
-<div class="stat"><div id="partners" class="num">0</div><div class="lbl">Partenariats à organiser</div></div>
+<div class="analytics-container">
+  <div class="stats">
+    <div class="stat"><div id="total" class="num">0</div><div class="lbl">Boutiques</div></div>
+    <div class="stat"><div id="interested" class="num">0</div><div class="lbl">Intéressées / Adhésion</div></div>
+    <div class="stat"><div id="tests" class="num">0</div><div class="lbl">Prêtes pour un test</div></div>
+    <div class="stat"><div id="partners" class="num">0</div><div class="lbl">Partenariats à organiser</div></div>
+  </div>
+  <div class="chart-box">
+    <h3>Taux d'adhésion</h3>
+    <div class="chart-wrapper"><canvas id="interestChart"></canvas></div>
+  </div>
 </div>
+
 <div class="toolbar">
 <input id="search" placeholder="Rechercher une boutique, un gérant, un quartier...">
 <button id="export" class="btn secondary" type="button">Exporter CSV</button>
@@ -83,11 +113,12 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
 "use strict";
 
 // --- CONFIGURATION SUPABASE ---
-var SUPABASE_URL = "https://jbxebdpurxeojyjcprpg.supabase.co"; // Replace par ton Project URL
-var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI" ;           // Replace par ta clé anon/public
+var SUPABASE_URL = "https://jbxebdpurxeojyjcprpg.supabase.co";
+var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI"; // Mettez votre clé publique ici
 
 var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var shops = [];
+var myChart = null;
 var $ = function(id){return document.getElementById(id);};
 
 function notice(msg,error){
@@ -98,7 +129,6 @@ function id(){return Date.now()+"_"+Math.random().toString(36).slice(2,8);}
 function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
 
-// --- LECTURE DEPUIS SUPABASE ---
 async function load(){
   var res = await sb.from("boutiques").select("*").order("created_at", { ascending: false });
   if(res.error){
@@ -117,26 +147,78 @@ function cls(s){
 }
 function dateFr(v){if(!v)return"—";var p=v.split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:v;}
 
+function updateChart(positives, neutral, negatives) {
+  var ctx = $("interestChart").getContext("2d");
+  if (myChart) myChart.destroy();
+  myChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Favorables / Intéressés', 'En réflexion', 'Pas intéressés'],
+      datasets: [{
+        data: [positives, neutral, negatives],
+        backgroundColor: ['#22c55e', '#f97316', '#ef4444'],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+      }
+    }
+  });
+}
+
 function render(){
- $("total").textContent=shops.length;
- $("interested").textContent=shops.filter(function(x){return x.interest==="Intéressé"||x.interest==="Prêt à discuter d'un test"||x.interest==="Partenariat à organiser"}).length;
- $("tests").textContent=shops.filter(function(x){return x.interest==="Prêt à discuter d'un test"}).length;
- $("partners").textContent=shops.filter(function(x){return x.interest==="Partenariat à organiser"}).length;
+ var favorable = shops.filter(function(x){return x.interest==="Intéressé"||x.interest==="Prêt à discuter d'un test"||x.interest==="Partenariat à organiser"}).length;
+ var reflexiion = shops.filter(function(x){return x.interest==="Souhaite réfléchir"}).length;
+ var refuse = shops.filter(function(x){return x.interest==="Pas intéressé"}).length;
+
+ $("total").textContent = shops.length;
+ $("interested").textContent = favorable;
+ $("tests").textContent = shops.filter(function(x){return x.interest==="Prêt à discuter d'un test"}).length;
+ $("partners").textContent = shops.filter(function(x){return x.interest==="Partenariat à organiser"}).length;
+
+ updateChart(favorable, reflexiion, refuse);
+
  var q=$("search").value.toLowerCase().trim();
  var data=shops.filter(function(x){return !q || [x.name,x.manager,x.phone,x.location,x.category,x.interest,x.nextStep,x.objections,x.notes].join(" ").toLowerCase().indexOf(q)>=0;});
+ 
  if(!data.length){$("list").innerHTML='<div class="empty">'+(shops.length?'Aucune boutique ne correspond à la recherche.':'<strong>Aucune boutique enregistrée.</strong><br><br>Commence par créer ta première fiche.')+'</div>';return;}
+
  $("list").innerHTML=data.map(function(x){
   var extra="";
-  if(x.objections)extra+="<strong>Objections / questions</strong><br>"+esc(x.objections);
-  if(x.notes)extra+=(extra?"<br><br>":"")+"<strong>Notes</strong><br>"+esc(x.notes);
-  return '<article class="shop"><div class="head"><div><div class="name">'+esc(x.name)+'</div><div class="meta">'+esc(x.location||"Emplacement non renseigné")+'</div></div><span class="badge '+cls(x.interest)+'">'+esc(x.interest||"Non renseigné")+'</span></div>'+
-  '<div class="details"><div class="detail"><strong>Responsable</strong>'+esc(x.manager||"—")+'</div><div class="detail"><strong>Téléphone / WhatsApp</strong>'+esc(x.phone||"—")+'</div><div class="detail"><strong>Catégorie</strong>'+esc(x.category||"—")+'</div><div class="detail"><strong>Date</strong>'+esc(dateFr(x.date))+'</div><div class="detail"><strong>Prochaine étape</strong>'+esc(x.nextStep||"—")+'</div></div>'+
-  (extra?'<div class="notes">'+extra+'</div>':'')+
-  '<div class="shop-actions"><button class="small" data-edit="'+esc(x.id)+'">Modifier</button><button class="small" data-delete="'+esc(x.id)+'">Supprimer</button></div></article>';
+  if(x.objections)extra+="<strong>Objections / questions :</strong><br>"+esc(x.objections);
+  if(x.notes)extra+=(extra?"<br><br>":"")+"<strong>Notes :</strong><br>"+esc(x.notes);
+
+  return '<article class="shop" id="shop-'+esc(x.id)+'" onclick="toggleAccordion(\''+esc(x.id)+'\', event)">'+
+    '<div class="head">'+
+      '<div><div class="name">'+esc(x.name)+' <span class="toggle-icon">▼</span></div><div class="meta">'+esc(x.location||"Emplacement non renseigné")+'</div></div>'+
+      '<span class="badge '+cls(x.interest)+'">'+esc(x.interest||"Non renseigné")+'</span>'+
+    '</div>'+
+    '<div class="shop-body">'+
+      '<div class="details">'+
+        '<div class="detail"><strong>Responsable</strong>'+esc(x.manager||"—")+'</div>'+
+        '<div class="detail"><strong>Téléphone / WhatsApp</strong>'+esc(x.phone||"—")+'</div>'+
+        '<div class="detail"><strong>Catégorie</strong>'+esc(x.category||"—")+'</div>'+
+        '<div class="detail"><strong>Date de visite</strong>'+esc(dateFr(x.date))+'</div>'+
+        '<div class="detail"><strong>Prochaine étape</strong>'+esc(x.nextStep||"—")+'</div>'+
+      '</div>'+
+      (extra?'<div class="notes">'+extra+'</div>':'')+
+      '<div class="shop-actions">'+
+        '<button class="small" onclick="event.stopPropagation(); edit(\''+esc(x.id)+'\')">Modifier</button>'+
+        '<button class="small" onclick="event.stopPropagation(); del(\''+esc(x.id)+'\')">Supprimer</button>'+
+      '</div>'+
+    '</div>'+
+  '</article>';
  }).join("");
- document.querySelectorAll("[data-edit]").forEach(function(b){b.onclick=function(){edit(b.dataset.edit)}});
- document.querySelectorAll("[data-delete]").forEach(function(b){b.onclick=function(){del(b.dataset.delete)}});
 }
+
+window.toggleAccordion = function(shopId, event) {
+  var el = $("shop-" + shopId);
+  if (el) el.classList.toggle("open");
+};
 
 function show(view){
  var form=view==="form";
@@ -144,18 +226,19 @@ function show(view){
  $("newTab").classList.toggle("active",form);$("listTab").classList.toggle("active",!form);
  if(!form) load();
 }
+
 function reset(){
  $("form").reset();$("editId").value="";$("date").value=today();$("formTitle").textContent="Nouvelle boutique";$("saveBtn").textContent="Enregistrer la boutique";
 }
-function edit(key){
+
+window.edit = function(key){
  var x=shops.find(function(s){return String(s.id)===String(key)});if(!x)return;
  $("editId").value=x.id;$("name").value=x.name||"";$("manager").value=x.manager||"";$("phone").value=x.phone||"";$("location").value=x.location||"";
  $("category").value=x.category||"";$("date").value=x.date||today();$("interest").value=x.interest||"";$("nextStep").value=x.nextStep||"";
  $("objections").value=x.objections||"";$("notes").value=x.notes||"";$("formTitle").textContent="Modifier la boutique";$("saveBtn").textContent="Enregistrer les modifications";show("form");window.scrollTo(0,0);
-}
+};
 
-// --- SUPPRESSION DANS SUPABASE ---
-async function del(key){
+window.del = async function(key){
  var x=shops.find(function(s){return String(s.id)===String(key)});if(!x)return;
  if(!confirm("Supprimer la fiche « "+x.name+" » ?"))return;
  var res = await sb.from("boutiques").delete().eq("id", key);
@@ -165,11 +248,10 @@ async function del(key){
    notice("Boutique supprimée.");
    load();
  }
-}
+};
 
 $("newTab").onclick=function(){show("form")};$("listTab").onclick=function(){show("list")};$("resetBtn").onclick=reset;$("search").oninput=render;
 
-// --- ECRITURE / MODIFICATION DANS SUPABASE ---
 $("form").onsubmit = async function(e){
  e.preventDefault();
  var shopId = $("editId").value || id();
@@ -224,7 +306,7 @@ $("export").onclick=function(){
  var h=["Nom","Responsable","Téléphone","Quartier","Catégorie","Date","Intérêt","Prochaine étape","Objections","Notes"];
  var rows=shops.map(function(x){return[x.name,x.manager,x.phone,x.location,x.category,x.date,x.interest,x.nextStep,x.objections,x.notes]});
  function c(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'}
- var csv="\ufeff"+h.map(c).join(";")+"\n"+rows.map(function(r){return r.map(c).join(";")}).join("\n");
+ var csv="\ufeff"+h.map(c].join(";")+"\n"+rows.map(function(r){return r.map(c).join(";")}).join("\n");
  var a=document.createElement("a"),u=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.href=u;a.download="fiausse_boutiques.csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
 };
 
