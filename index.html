@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FIAUSSÉ — Suivi des boutiques</title>
+<!-- 1. Importation du SDK Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--p:#0ea5e9;--pd:#0284c7;--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#64748b;--border:#dbe3ee}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
@@ -36,7 +38,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
 
 <section id="formView" class="card">
 <h2 id="formTitle">Nouvelle boutique</h2>
-<p style="color:#64748b">Remplis cette fiche après chaque visite. Chaque boutique est enregistrée séparément.</p>
+<p style="color:#64748b">Remplis cette fiche après chaque visite. Les données sont sauvegardées en ligne sur Supabase.</p>
 <form id="form">
 <input id="editId" type="hidden">
 <div class="grid">
@@ -74,13 +76,19 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
 <div id="list" class="shop-list"></div>
 </section>
 </main>
-<footer>FIAUSSÉ — Les données sont sauvegardées dans le navigateur utilisé.</footer>
+<footer>FIAUSSÉ — Données synchronisées avec Supabase</footer>
 
 <script>
 (function(){
 "use strict";
-var KEY="fiausse_boutiques_v2", shops=[];
-var $=function(id){return document.getElementById(id);};
+
+// --- CONFIGURATION SUPABASE ---
+var SUPABASE_URL = "https://jbxebdpurxeojyjcprpg.supabase.co"; // Replace par ton Project URL
+var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI" ;           // Replace par ta clé anon/public
+
+var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var shops = [];
+var $ = function(id){return document.getElementById(id);};
 
 function notice(msg,error){
  var n=$("notice"); n.textContent=msg; n.className="notice show "+(error?"err":"ok");
@@ -89,19 +97,18 @@ function notice(msg,error){
 function id(){return Date.now()+"_"+Math.random().toString(36).slice(2,8);}
 function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
-function storageOK(){try{localStorage.setItem("__f","1");localStorage.removeItem("__f");return true}catch(e){return false;}}
-function load(){
- try{
-  var raw=localStorage.getItem(KEY);
-  if(!raw) raw=localStorage.getItem("fiausse_prospection_v1");
-  shops=raw?JSON.parse(raw):[];
-  if(!Array.isArray(shops)) shops=[];
- }catch(e){shops=[];notice("Impossible de lire les données sauvegardées.",true);}
+
+// --- LECTURE DEPUIS SUPABASE ---
+async function load(){
+  var res = await sb.from("boutiques").select("*").order("created_at", { ascending: false });
+  if(res.error){
+    notice("Erreur lors du chargement depuis Supabase.", true);
+  } else {
+    shops = res.data || [];
+    render();
+  }
 }
-function save(){
- try{localStorage.setItem(KEY,JSON.stringify(shops));return true}
- catch(e){notice("La sauvegarde est bloquée par ce navigateur.",true);return false}
-}
+
 function cls(s){
  if(s==="Intéressé"||s==="Prêt à discuter d'un test"||s==="Partenariat à organiser")return"green";
  if(s==="Souhaite réfléchir")return"orange";
@@ -109,6 +116,7 @@ function cls(s){
  return"";
 }
 function dateFr(v){if(!v)return"—";var p=v.split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:v;}
+
 function render(){
  $("total").textContent=shops.length;
  $("interested").textContent=shops.filter(function(x){return x.interest==="Intéressé"||x.interest==="Prêt à discuter d'un test"||x.interest==="Partenariat à organiser"}).length;
@@ -129,11 +137,12 @@ function render(){
  document.querySelectorAll("[data-edit]").forEach(function(b){b.onclick=function(){edit(b.dataset.edit)}});
  document.querySelectorAll("[data-delete]").forEach(function(b){b.onclick=function(){del(b.dataset.delete)}});
 }
+
 function show(view){
  var form=view==="form";
  $("formView").classList.toggle("hidden",!form);$("listView").classList.toggle("hidden",form);
  $("newTab").classList.toggle("active",form);$("listTab").classList.toggle("active",!form);
- if(!form)render();
+ if(!form) load();
 }
 function reset(){
  $("form").reset();$("editId").value="";$("date").value=today();$("formTitle").textContent="Nouvelle boutique";$("saveBtn").textContent="Enregistrer la boutique";
@@ -144,21 +153,72 @@ function edit(key){
  $("category").value=x.category||"";$("date").value=x.date||today();$("interest").value=x.interest||"";$("nextStep").value=x.nextStep||"";
  $("objections").value=x.objections||"";$("notes").value=x.notes||"";$("formTitle").textContent="Modifier la boutique";$("saveBtn").textContent="Enregistrer les modifications";show("form");window.scrollTo(0,0);
 }
-function del(key){
+
+// --- SUPPRESSION DANS SUPABASE ---
+async function del(key){
  var x=shops.find(function(s){return String(s.id)===String(key)});if(!x)return;
  if(!confirm("Supprimer la fiche « "+x.name+" » ?"))return;
- shops=shops.filter(function(s){return String(s.id)!==String(key)});if(save()){render();notice("Boutique supprimée.");}
+ var res = await sb.from("boutiques").delete().eq("id", key);
+ if(res.error){
+   notice("Erreur de suppression.", true);
+ } else {
+   notice("Boutique supprimée.");
+   load();
+ }
 }
+
 $("newTab").onclick=function(){show("form")};$("listTab").onclick=function(){show("list")};$("resetBtn").onclick=reset;$("search").oninput=render;
-$("form").onsubmit=function(e){
+
+// --- ECRITURE / MODIFICATION DANS SUPABASE ---
+$("form").onsubmit = async function(e){
  e.preventDefault();
- var x={id:$("editId").value||id(),name:$("name").value.trim(),manager:$("manager").value.trim(),phone:$("phone").value.trim(),location:$("location").value.trim(),category:$("category").value,date:$("date").value,interest:$("interest").value,nextStep:$("nextStep").value.trim(),objections:$("objections").value.trim(),notes:$("notes").value.trim()};
+ var shopId = $("editId").value || id();
+ var x = {
+   id: shopId,
+   name: $("name").value.trim(),
+   manager: $("manager").value.trim(),
+   phone: $("phone").value.trim(),
+   location: $("location").value.trim(),
+   category: $("category").value,
+   date: $("date").value,
+   interest: $("interest").value,
+   nextStep: $("nextStep").value.trim(),
+   objections: $("objections").value.trim(),
+   notes: $("notes").value.trim()
+ };
  if(!x.name){notice("Le nom de la boutique est obligatoire.",true);$("name").focus();return;}
- var editing=!!$("editId").value;
- if(editing)shops=shops.map(function(s){return String(s.id)===String(x.id)?x:s});else shops.unshift(x);
- if(save()){reset();show("list");notice(editing?"Boutique modifiée avec succès.":"Boutique enregistrée avec succès.");}
+ var editing = !!$("editId").value;
+ 
+ $("saveBtn").disabled = true;
+ $("saveBtn").textContent = "Enregistrement...";
+
+ var res = await sb.from("boutiques").upsert([x]);
+ 
+ $("saveBtn").disabled = false;
+ $("saveBtn").textContent = editing ? "Enregistrer les modifications" : "Enregistrer la boutique";
+
+ if(res.error){
+   notice("Erreur Supabase : " + res.error.message, true);
+ } else {
+   reset();
+   show("list");
+   notice(editing ? "Boutique modifiée avec succès." : "Boutique enregistrée avec succès.");
+ }
 };
-$("clear").onclick=function(){if(!shops.length){notice("Aucune boutique à supprimer.",true);return}if(confirm("Supprimer toutes les boutiques de cet appareil ?")){shops=[];if(save()){render();notice("Toutes les boutiques ont été supprimées.")}}};
+
+$("clear").onclick = async function(){
+ if(!shops.length){notice("Aucune boutique à supprimer.",true);return}
+ if(confirm("Supprimer TOUTES les boutiques de la base de données Supabase ?")){
+   var res = await sb.from("boutiques").delete().neq("id", "0");
+   if(res.error){
+     notice("Erreur lors de la suppression.", true);
+   } else {
+     load();
+     notice("Toutes les boutiques ont été supprimées.");
+   }
+ }
+};
+
 $("export").onclick=function(){
  if(!shops.length){notice("Aucune boutique à exporter.",true);return}
  var h=["Nom","Responsable","Téléphone","Quartier","Catégorie","Date","Intérêt","Prochaine étape","Objections","Notes"];
@@ -167,8 +227,9 @@ $("export").onclick=function(){
  var csv="\ufeff"+h.map(c).join(";")+"\n"+rows.map(function(r){return r.map(c).join(";")}).join("\n");
  var a=document.createElement("a"),u=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.href=u;a.download="fiausse_boutiques.csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
 };
+
 $("date").value=today();
-if(!storageOK())notice("La sauvegarde locale est indisponible dans ce navigateur.",true);else load();
+load();
 })();
 </script>
 </body>
