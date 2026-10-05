@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1479b8">
+<title>FIAUSSÉ — Suivi des boutiques</title>
+<style>
+:root{--blue:#1479b8;--deep:#105783;--pale:#eaf5fc;--ink:#172b3a;--muted:#647789;--line:#dce6ed;--bg:#f4f7fa;--white:#fff;--green:#16845b;--red:#b83c42}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(120deg,var(--deep),var(--blue));color:white;padding:28px 20px 34px}
+.wrap{max-width:1050px;margin:auto}header .eyebrow{font-size:12px;letter-spacing:.13em;font-weight:700;opacity:.85}h1{font-size:clamp(25px,4vw,36px);line-height:1.15;margin:8px 0}header p{max-width:650px;margin:8px 0 0;color:#e6f4fc}
+main{max-width:1050px;margin:-16px auto 50px;padding:0 16px}.tabs{display:flex;gap:8px;margin-bottom:16px}.tab{border:1px solid var(--line);background:white;color:var(--deep);padding:10px 16px;border-radius:12px;font-weight:700;cursor:pointer}.tab.active{background:var(--deep);color:white;border-color:var(--deep)}
+.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 28px #15364a0a}.panel h2{font-size:20px;margin:0 0 5px}.hint{color:var(--muted);margin:0 0 20px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}label{font-size:13px;font-weight:700;color:#334b5d}input,select,textarea{width:100%;border:1px solid #cbd8e2;border-radius:10px;padding:11px 12px;font:inherit;color:var(--ink);background:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #1479b81c}textarea{min-height:90px;resize:vertical}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:750;cursor:pointer}.primary{background:var(--blue);color:white}.secondary{background:var(--pale);color:var(--deep)}.danger{background:#fff0f0;color:var(--red)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.stat{background:var(--pale);border-radius:13px;padding:13px}.stat strong{display:block;font-size:24px;color:var(--deep)}.stat span{font-size:12px;color:#496579}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.toolbar input{flex:1;min-width:190px}.list{display:grid;gap:10px}.record{border:1px solid var(--line);border-radius:13px;padding:15px;display:flex;justify-content:space-between;gap:15px;align-items:flex-start}.record h3{margin:0 0 4px;font-size:16px}.record p{margin:3px 0;color:var(--muted);font-size:13px}.pill{display:inline-block;border-radius:99px;padding:3px 9px;font-size:11px;font-weight:800;background:#eef2f5;color:#455b6b}.pill.good{background:#e6f6ef;color:#14724e}.pill.mid{background:#fff4df;color:#94620c}.record-actions{display:flex;gap:7px;flex-shrink:0}.record-actions button{border:1px solid var(--line);background:white;border-radius:8px;padding:7px 9px;cursor:pointer}.empty{text-align:center;padding:35px 15px;color:var(--muted)}.hidden{display:none!important}.notice{font-size:12px;color:var(--muted);margin-top:15px}.foot{color:var(--muted);font-size:12px;text-align:center;margin:18px 0}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.stats{grid-template-columns:1fr 1fr}.record{display:block}.record-actions{margin-top:12px}.panel{padding:17px}.tabs{display:grid;grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">OUTIL DE PROSPECTION TERRAIN</div><h1>FIAUSSÉ — Suivi des boutiques</h1><p>Enregistre chaque rencontre avec un commerçant, retrouve tes échanges et suis les prochaines étapes de partenariat.</p></div></header>
+<main>
+  <div class="tabs">
+    <button class="tab active" id="tab-form" type="button">＋ Nouvelle visite</button>
+    <button class="tab" id="tab-list" type="button">Mes boutiques <span id="count-tab"></span></button>
+  </div>
+  <section class="panel" id="form-panel">
+    <h2 id="form-title">Fiche de prospection</h2><p class="hint">Remplis cette fiche après chaque rencontre. Les champs peuvent rester vides si tu n'as pas l'information.</p>
+    <form id="shop-form">
+      <input type="hidden" id="edit-id">
+      <div class="grid">
+        <div class="field"><label for="shop">Nom de la boutique *</label><input id="shop" required placeholder="Ex. Boutique Chez Ama"></div>
+        <div class="field"><label for="manager">Nom du gérant / responsable</label><input id="manager" placeholder="Nom et prénom"></div>
+        <div class="field"><label for="phone">Téléphone / WhatsApp</label><input id="phone" type="tel" placeholder="+228 ..."></div>
+        <div class="field"><label for="area">Quartier / emplacement</label><input id="area" placeholder="Ex. Agoè, Adidogomé..."></div>
+        <div class="field"><label for="category">Catégorie de produits</label><select id="category"><option value="">Choisir une catégorie</option><option>Maison et décoration</option><option>Électroménager</option><option>Cuisine et ustensiles</option><option>Mode et accessoires</option><option>Téléphones et accessoires</option><option beauté et soins</option><option>Produits du quotidien</option><option>Autre</option></select></div>
+        <div class="field"><label for="date">Date de la visite</label><input id="date" type="date"></div>
+        <div class="field"><label for="interest">Niveau d'intérêt</label><select id="interest"><option value="">À déterminer</option><option>Pas intéressé</option><option>Souhaite réfléchir</option><option>Intéressé</option><option>Prêt à discuter d'un test</option><option>Partenariat à organiser</option></select></div>
+        <div class="field"><label for="follow">Prochaine étape</label><input id="follow" placeholder="Ex. Rappeler vendredi, envoyer les détails..."></div>
+        <div class="field full"><label for="objections">Questions, objections ou préoccupations</label><textarea id="objections" placeholder="Prix, livraison, disponibilité, fonctionnement, confiance..."></textarea></div>
+        <div class="field full"><label for="notes">Notes complémentaires</label><textarea id="notes" placeholder="Ce que le commerçant a expliqué, ses besoins, ses conditions..."></textarea></div>
+      </div>
+      <div class="actions"><button class="btn primary" type="submit" id="save-btn">Enregistrer cette visite</button><button class="btn secondary" type="button" id="reset-btn">Effacer le formulaire</button></div>
+      <p class="notice">Tes fiches sont enregistrées dans le navigateur de cet appareil. Elles ne sont pas automatiquement partagées avec d'autres téléphones ou ordinateurs.</p>
+    </form>
+  </section>
+  <section class="panel hidden" id="list-panel">
+    <h2>Mes boutiques enregistrées</h2><p class="hint">Consulte, modifie ou exporte tes fiches de prospection.</p>
+    <div class="stats"><div class="stat"><strong id="total">0</strong><span>Visites enregistrées</span></div><div class="stat"><strong id="interested">0</strong><span>Intéressés ou plus</span></div><div class="stat"><strong id="followups">0</strong><span>À relancer</span></div></div>
+    <div class="toolbar"><input id="search" placeholder="Rechercher une boutique, un quartier..."><button class="btn secondary" id="export-btn" type="button">Exporter en CSV</button></div>
+    <div class="list" id="records"></div>
+    <p class="notice">Conseil : exporte régulièrement le fichier CSV pour conserver une copie de sauvegarde.</p>
+  </section>
+  <div class="foot">FIAUSSÉ · Outil interne de suivi commercial</div>
+</main>
+<script>
+const KEY='fiausse_prospection_v1';
+const $=id=>document.getElementById(id);
+let records=load();
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(records));render()}
+function val(id){return $(id).value.trim()}
+function setTab(which){$('form-panel').classList.toggle('hidden',which!=='form');$('list-panel').classList.toggle('hidden',which!=='list');$('tab-form').classList.toggle('active',which==='form');$('tab-list').classList.toggle('active',which==='list');if(which==='list')render()}
+$('tab-form').onclick=()=>setTab('form');$('tab-list').onclick=()=>setTab('list');
+$('date').value=new Date().toISOString().slice(0,10);
+function resetForm(){ $('shop-form').reset();$('edit-id').value='';$('date').value=new Date().toISOString().slice(0,10);$('form-title').textContent='Fiche de prospection';$('save-btn').textContent='Enregistrer cette visite';}
+$('reset-btn').onclick=resetForm;
+$('shop-form').onsubmit=e=>{e.preventDefault();const id=$('edit-id').value;const item={id:id||String(Date.now()),shop:val('shop'),manager:val('manager'),phone:val('phone'),area:val('area'),category:val('category'),date:val('date'),interest:val('interest'),follow:val('follow'),objections:val('objections'),notes:val('notes')};if(id){records=records.map(r=>r.id===id?item:r)}else{records.unshift(item)}persist();resetForm();setTab('list')};
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function badge(i){if(i==='Intéressé'||i==='Prêt à discuter d’un test'||i==='Prêt à discuter d\\'un test'||i==='Partenariat à organiser')return 'good';if(i==='Souhaite réfléchir')return 'mid';return ''}
+function render(){const q=$('search').value.toLowerCase();const shown=records.filter(r=>(r.shop+' '+r.manager+' '+r.area+' '+r.category).toLowerCase().includes(q));$('count-tab').textContent=records.length?'('+records.length+')':'';$('total').textContent=records.length;$('interested').textContent=records.filter(r=>['Intéressé','Prêt à discuter d\\'un test','Partenariat à organiser'].includes(r.interest)).length;$('followups').textContent=records.filter(r=>r.follow).length;
+$('records').innerHTML=shown.length?shown.map(r=>`<article class="record"><div><h3>${esc(r.shop)}</h3><p>${esc([r.category,r.area].filter(Boolean).join(' · ')||'Catégorie / emplacement non précisés')}</p><p>${esc(r.manager||'Responsable non renseigné')} ${r.phone?'· '+esc(r.phone):''}</p><p>${r.date?'Visite : '+esc(r.date):''} ${r.follow?'· À faire : '+esc(r.follow):''}</p><span class="pill ${badge(r.interest)}">${esc(r.interest||'Intérêt à déterminer')}</span></div><div class="record-actions"><button type="button" data-edit="${esc(r.id)}">Modifier</button><button type="button" data-delete="${esc(r.id)}" aria-label="Supprimer">Supprimer</button></div></article>`).join(''):'<div class="empty">Aucune boutique enregistrée pour le moment.<br>Appuie sur « Nouvelle visite » pour commencer.</div>'}
+$('search').addEventListener('input',render);
+$('records').addEventListener('click',e=>{const edit=e.target.dataset.edit,del=e.target.dataset.delete;if(edit){const r=records.find(x=>x.id===edit);if(!r)return;for(const k of ['shop','manager','phone','area','category','date','interest','follow','objections','notes'])$(k).value=r[k]||'';$('edit-id').value=r.id;$('form-title').textContent='Modifier la fiche';$('save-btn').textContent='Enregistrer les modifications';setTab('form');window.scrollTo({top:0,behavior:'smooth'})}if(del&&confirm('Supprimer cette fiche ? Cette action est définitive.')){records=records.filter(r=>r.id!==del);persist()}});
+$('export-btn').onclick=()=>{const cols=['shop','manager','phone','area','category','date','interest','follow','objections','notes'];const csv=[cols.join(';'),...records.map(r=>cols.map(k=>'"'+String(r[k]||'').replace(/"/g,'""')+'"').join(';'))].join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='fiausse-suivi-boutiques.csv';a.click();URL.revokeObjectURL(a.href)};
+render();
+</script>
+</body></html>
