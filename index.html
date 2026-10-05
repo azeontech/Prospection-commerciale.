@@ -3,397 +3,200 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FIAUSSÉ — Suivi des boutiques</title>
-<!-- Supabase SDK & Chart.js CDN -->
+<title>FIAUSSÉ — Fiche d'Échange Partenaire</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{--p:#0ea5e9;--pd:#0284c7;--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#64748b;--border:#dbe3ee}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-header{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;padding:22px 16px}
-.wrap{max-width:1050px;margin:auto;padding:0 16px}.brand{font-size:24px;font-weight:800}.sub{margin-top:5px;font-size:14px;opacity:.9}
-.tabs{display:flex;gap:10px;margin:20px 0 16px}.tab,.btn,.small{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer}
-.tab{background:#fff;border:1px solid var(--border)}.tab.active,.primary{background:var(--p);color:#fff}.secondary{background:#e8eef5;color:var(--text)}.danger{background:#fee2e2;color:#991b1b}
-.card,.shop,.stat,.empty{background:#fff;border:1px solid var(--border);border-radius:14px}.card{padding:20px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.field{display:flex;flex-direction:column;gap:7px}.full{grid-column:1/-1}
-label{font-size:14px;font-weight:700}input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:9px;font:inherit}textarea{min-height:100px;resize:vertical}
-.actions,.toolbar,.shop-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.btn{display:inline-block}
-.notice{display:none;padding:12px 14px;margin:16px 0;border-radius:9px;font-weight:700}.notice.show{display:block}.ok{background:#dcfce7;color:#166534}.err{background:#fee2e2;color:#991b1b}
-.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}.stat{padding:15px}.num{font-size:25px;font-weight:900}.lbl{font-size:13px;color:var(--muted)}
-
-.analytics-container{display:grid;grid-template-columns:1fr 300px;gap:15px;margin-bottom:15px;align-items:center}
-.chart-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:15px;display:flex;flex-direction:column;align-items:center}
-.chart-box h3{margin:0 0 10px 0;font-size:15px;color:var(--text)}
-.chart-wrapper{width:100%;max-width:220px;height:220px}
-
-.toolbar{margin-top:0}.toolbar input{flex:1;min-width:220px}.shop-list{display:grid;gap:12px}
-.shop{padding:16px;cursor:pointer;transition:background-color .2s}
-.shop:hover{background-color:#f8fafc}
-.head{display:flex;justify-content:space-between;gap:12px;align-items:center}
-.name{font-size:17px;font-weight:900}
-.meta{color:var(--muted);font-size:13px;margin-top:2px}
-.badge{padding:6px 9px;border-radius:999px;font-size:12px;font-weight:800;background:#dbeafe;color:#1d4ed8;height:max-content}
-.green{background:#dcfce7;color:#166534}.orange{background:#ffedd5;color:#9a3412}.red{background:#fee2e2;color:#991b1b}
-.toggle-icon{font-size:12px;color:var(--muted);margin-left:8px}
-
-.shop-body{display:none;border-top:1px solid var(--border);margin-top:13px;padding-top:13px}
-.shop.open .shop-body{display:block}
-.details{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;font-size:14px}
-.detail strong{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
-.notes{margin-top:13px;padding-top:10px;border-top:1px dashed var(--border);white-space:pre-wrap;font-size:14px}
-.empty{text-align:center;padding:45px 20px;color:var(--muted)}
-
-/* Nouveaux styles pour Photo et GPS */
-.shop-photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-bottom:12px;border:1px solid var(--border)}
+header{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;padding:30px 16px;text-align:center}
+.wrap{max-width:700px;margin:20px auto;padding:0 16px}.brand{font-size:26px;font-weight:900;letter-spacing:1px}.sub{margin-top:6px;font-size:15px;opacity:.95}
+.intro-box{background:#e0f2fe;border:1px solid #bae6fd;color:#0369a1;padding:16px;border-radius:12px;margin-bottom:20px;font-size:14px;line-height:1.5}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,0.03);margin-bottom:20px}
+.section-title{font-size:15px;font-weight:800;color:var(--p);border-bottom:2px solid var(--bg);padding-bottom:8px;margin-bottom:16px;margin-top:0;text-transform:uppercase;letter-spacing:0.5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}
+label{font-size:13px;font-weight:700;color:var(--text)}input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:9px;font:inherit}
+textarea{min-height:85px;resize:vertical}
+.btn{border:0;border-radius:10px;padding:16px;font-weight:800;background:var(--p);color:#fff;cursor:pointer;width:100%;font-size:16px;margin-top:10px}
+.btn:hover{background:var(--pd)}
+.notice{display:none;padding:14px;margin-bottom:16px;border-radius:9px;font-weight:700;text-align:center}.notice.show{display:block}.ok{background:#dcfce7;color:#166534}.err{background:#fee2e2;color:#991b1b}
+.gps-btn{background:#e0f2fe;color:#0369a1;padding:9px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;margin-top:4px}
 .photo-thumb{width:100px;height:100px;object-fit:cover;border-radius:8px;border:1px solid var(--border);margin-top:8px}
-.gps-btn{display:inline-flex;align-items:center;gap:5px;background:#e0f2fe;color:#0369a1;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;margin-top:4px}
-.map-link{display:inline-block;color:var(--p);font-weight:bold;text-decoration:underline}
-
-footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
-
-@media(max-width:700px){.grid,.details,.stats,.analytics-container{grid-template-columns:1fr}.full{grid-column:auto}.head{flex-direction:column;align-items:flex-start}}
+.hidden{display:none!important}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><div class="brand">FIAUSSÉ — Suivi des boutiques</div><div class="sub">Prospection terrain et suivi des partenaires</div></div></header>
+<header>
+  <div class="brand">FIAUSSÉ</div>
+  <div class="sub">Enquête & Diagnostic Commercial Boutiques</div>
+</header>
 
 <main class="wrap">
 <div id="notice" class="notice"></div>
-<div class="tabs">
-<button id="newTab" class="tab active" type="button">＋ Nouvelle visite</button>
-<button id="listTab" class="tab" type="button">Mes boutiques</button>
+
+<div class="intro-box">
+  👋 <strong>Bonjour !</strong> Merci de prendre 2 minutes pour échanger avec nous. L'objectif de cette étude est de comprendre la réalité de votre commerce afin de concevoir une expérience de vente sur-mesure pour les boutiques de Lomé.
 </div>
 
-<section id="formView" class="card">
-<h2 id="formTitle">Nouvelle boutique</h2>
-<p style="color:#64748b">Remplis cette fiche après chaque visite. Les données sont sauvegardées en ligne sur Supabase.</p>
-<form id="form">
-<input id="editId" type="hidden">
+<section class="card" id="formCard">
+<form id="publicForm">
 <input id="photoBase64" type="hidden">
+
+<!-- CHAPITRE 2 : Identification -->
+<h3 class="section-title">1. Votre Boutique</h3>
 <div class="grid">
-<div class="field"><label>Nom de la boutique *</label><input id="name" required placeholder="Ex. Boutique Chez Ama"></div>
-<div class="field"><label>Nom du gérant / responsable</label><input id="manager" placeholder="Ex. M. Koffi"></div>
-<div class="field"><label>Téléphone / WhatsApp</label><input id="phone" type="tel" placeholder="+228 ..."></div>
-<div class="field">
-  <label>Quartier / Emplacement</label>
-  <input id="location" placeholder="Ex. Agoè, à côté de la pharmacie">
+  <div class="field full"><label>Nom de votre boutique *</label><input id="name" required placeholder="Ex. Boutique Grace & Mode"></div>
+  <div class="field"><label>Nom & Prénom du responsable *</label><input id="manager" required placeholder="Ex. M. Koffi"></div>
+  <div class="field"><label>Numéro WhatsApp direct *</label><input id="phone" type="tel" required placeholder="+228 90 00 00 00"></div>
+  <div class="field"><label>Quartier / Emplacement à Lomé *</label><input id="location" required placeholder="Ex. Agoè Assiyéyé"></div>
+  <div class="field full">
+    <label>Localisation GPS (Optionnel)</label>
+    <input id="gps" placeholder="Ex. 6.137, 1.212" readonly>
+    <button type="button" class="gps-btn" id="getGpsBtn">📍 Cliquer ici pour joindre ma position GPS</button>
+  </div>
 </div>
-<div class="field">
-  <label>Localisation GPS exacte</label>
-  <input id="gps" placeholder="Ex. 6.137, 1.212" readonly>
-  <button type="button" class="gps-btn" id="getGpsBtn">📍 Obtenir ma position actuelle</button>
+
+<br>
+
+<!-- CHAPITRE 3 & 4 : Fonctionnement & Difficultés -->
+<h3 class="section-title">2. Votre Vente au Quotidien</h3>
+<div class="grid">
+  <div class="field"><label>Secteur ou produits principaux *</label><select id="category" required>
+    <option value="">Sélectionner</option>
+    <option>Habillement, Chaussures & Mode</option>
+    <option>Cosmétique, Beauté & Parfumerie</option>
+    <option>Électronique, Téléphones & High-Tech</option>
+    <option>Alimentation & Produits de consommation</option>
+    <option>Maison & Décoration</option>
+    <option>Autre activité</option>
+  </select></div>
+
+  <div class="field"><label>Comment faites-vous connaître vos produits ?</label><select id="canauxVente">
+    <option value="">Sélectionner</option>
+    <option>Uniquement les clients qui passent en boutique</option>
+    <option>Statuts WhatsApp & Groupes</option>
+    <option>Facebook, Instagram, TikTok</option>
+    <option>Boutique physique + Réseaux sociaux</option>
+  </select></div>
+
+  <div class="field full"><label>Aujourd'hui, quelle est la plus grande difficulté de votre boutique ? *</label><select id="freinsCommerciaux" required>
+    <option value="">Sélectionner le problème majeur</option>
+    <option>Pas assez de nouveaux clients / Manque de visibilité</option>
+    <option>Les clients demandent les prix sur WhatsApp mais n'achètent pas</option>
+    <option>Gestion des livraisons compliquée ou trop chère</option>
+    <option>Difficulté à présenter tout le catalogue aux clients</option>
+    <option>Gestion du stock et de la caisse difficile</option>
+  </select></div>
+
+  <div class="field full"><label>Expliquez-nous en quelques mots ce qui vous aiderait à vendre davantage :</label><textarea id="difficultes" required placeholder="Ex. Avoir plus de clients sérieux, pouvoir montrer les produits en vidéo sans perdre de temps à discuter des prix..."></textarea></div>
 </div>
-<div class="field">
-  <label>Photo de la boutique</label>
-  <input type="file" id="photoInput" accept="image/*">
-  <img id="previewImg" class="photo-thumb hidden" alt="Aperçu">
+
+<br>
+
+<!-- CHAPITRE 5, 7 & 8 : Projection FIAUSSÉ -->
+<h3 class="section-title">3. Votre Avis sur la Solution</h3>
+<div class="grid">
+  <div class="field full"><label>Qu'attendez-vous d'une application comme FIAUSSÉ ? *</label><textarea id="attentesSolution" required placeholder="Ex. Me donner de la visibilité, gérer la commande en direct, me rapprocher des jeunes acheteurs..."></textarea></div>
+
+  <div class="field"><label>Seriez-vous prêt à présenter vos produits en de courtes vidéos ? *</label><select id="capaciteVideo" required>
+    <option value="">Sélectionner</option>
+    <option>Oui, je fais déjà des vidéos / photos</option>
+    <option>Oui, si l'équipe FIAUSSÉ m'accompagne</option>
+    <option>Non, je préfère uniquement des photos de catalogue</option>
+  </select></div>
+
+  <div class="field"><label>Si l'application vous apporte de nouveaux clients, quel modèle préférez-vous ?</label><select id="budgetSouhaite">
+    <option value="">Sélectionner</option>
+    <option>Une commission uniquement sur les ventes réalisées</option>
+    <option>Un abonnement mensuel fixe (ex. 5 000 - 10 000 FCFA)</option>
+    <option>À discuter lors de l'échange</option>
+  </select></div>
+
+  <div class="field full">
+    <label>Photo de la devanture ou d'un produit phare (Optionnel)</label>
+    <input type="file" id="photoInput" accept="image/*">
+    <img id="previewImg" class="photo-thumb hidden" alt="Aperçu">
+  </div>
 </div>
-<div class="field"><label>Catégorie de produits</label><select id="category">
-<option value="">Sélectionner</option><option>Maison</option><option>Cuisine</option><option>Mode</option><option>Beauté et soins</option><option>Électronique</option><option>Alimentation</option><option>Autre</option>
-</select></div>
-<div class="field"><label>Date de la visite</label><input id="date" type="date"></div>
-<div class="field"><label>Niveau d'intérêt</label><select id="interest">
-<option value="">Sélectionner</option><option>Pas intéressé</option><option>Souhaite réfléchir</option><option>Intéressé</option><option>Prêt à discuter d'un test</option><option>Partenariat à organiser</option>
-</select></div>
-<div class="field"><label>Prochaine étape</label><input id="nextStep" placeholder="Ex. Revenir vendredi"></div>
-<div class="field full"><label>Questions, objections ou préoccupations</label><textarea id="objections" placeholder="Ex. Commission, livraison, paiement..."></textarea></div>
-<div class="field full"><label>Notes complémentaires</label><textarea id="notes" placeholder="Informations importantes..."></textarea></div>
-</div>
-<div class="actions"><button class="btn primary" type="submit" id="saveBtn">Enregistrer la boutique</button><button class="btn secondary" type="button" id="resetBtn">Effacer</button></div>
+
+<button class="btn" type="submit" id="saveBtn">Envoyer mes réponses à l'équipe FIAUSSÉ</button>
 </form>
 </section>
-
-<section id="listView" class="hidden">
-<div class="analytics-container">
-  <div class="stats">
-    <div class="stat"><div id="total" class="num">0</div><div class="lbl">Boutiques</div></div>
-    <div class="stat"><div id="interested" class="num">0</div><div class="lbl">Intéressées / Adhésion</div></div>
-    <div class="stat"><div id="tests" class="num">0</div><div class="lbl">Prêtes pour un test</div></div>
-    <div class="stat"><div id="partners" class="num">0</div><div class="lbl">Partenariats à organiser</div></div>
-  </div>
-  <div class="chart-box">
-    <h3>Taux d'adhésion</h3>
-    <div class="chart-wrapper"><canvas id="interestChart"></canvas></div>
-  </div>
-</div>
-
-<div class="toolbar">
-<input id="search" placeholder="Rechercher une boutique, un gérant, un quartier...">
-<button id="export" class="btn secondary" type="button">Exporter CSV</button>
-<button id="clear" class="btn danger" type="button">Tout supprimer</button>
-</div>
-<div id="list" class="shop-list"></div>
-</section>
 </main>
-<footer>FIAUSSÉ — Données synchronisées avec Supabase</footer>
 
 <script>
 (function(){
 "use strict";
-
-// --- CONFIGURATION SUPABASE ---
 var SUPABASE_URL = "https://jbxebdpurxeojyjcprpg.supabase.co";
-var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI" ; // <-- Insérez votre clé publiable ici
+var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI" ; // <-- Remplacer par votre clé publiable (anon) Supabase
 
 var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-var shops = [];
-var myChart = null;
 var $ = function(id){return document.getElementById(id);};
 
 function notice(msg,error){
  var n=$("notice"); n.textContent=msg; n.className="notice show "+(error?"err":"ok");
- clearTimeout(notice.t); notice.t=setTimeout(function(){n.className="notice"},3500);
+ window.scrollTo(0,0);
 }
-function id(){return Date.now()+"_"+Math.random().toString(36).slice(2,8);}
-function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
-function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
 
-// Géolocalisation GPS
 $("getGpsBtn").onclick = function() {
-  if (!navigator.geolocation) {
-    notice("La géolocalisation n'est pas supportée par votre navigateur.", true);
-    return;
-  }
-  $("getGpsBtn").textContent = "📍 Localisation en cours...";
+  if (!navigator.geolocation) { notice("Le GPS n'est pas supporté par votre navigateur", true); return; }
+  $("getGpsBtn").textContent = "📍 Recherche de la position...";
   navigator.geolocation.getCurrentPosition(function(pos) {
-    var coords = pos.coords.latitude.toFixed(6) + ", " + pos.coords.longitude.toFixed(6);
-    $("gps").value = coords;
-    $("getGpsBtn").textContent = "📍 Position capturée !";
-    setTimeout(function(){ $("getGpsBtn").textContent = "📍 Obtenir ma position actuelle"; }, 2000);
-  }, function(err) {
-    notice("Impossible d'obtenir la position. Activez le GPS.", true);
-    $("getGpsBtn").textContent = "📍 Obtenir ma position actuelle";
-  }, { enableHighAccuracy: true });
+    $("gps").value = pos.coords.latitude.toFixed(6) + ", " + pos.coords.longitude.toFixed(6);
+    $("getGpsBtn").textContent = "📍 Position enregistrée !";
+  }, function() { notice("Veuillez autoriser le GPS sur votre téléphone", true); $("getGpsBtn").textContent = "📍 Partager ma position"; });
 };
 
-// Traitement des images (Compression en webp / jpg)
 $("photoInput").onchange = function(e) {
-  var file = e.target.files[0];
-  if (!file) return;
+  var file = e.target.files[0]; if (!file) return;
   var reader = new FileReader();
   reader.onload = function(evt) {
     var img = new Image();
     img.onload = function() {
       var canvas = document.createElement("canvas");
-      var maxDim = 800; // Redimensionne pour alléger le stockage
-      var w = img.width, h = img.height;
-      if (w > h && w > maxDim) { h *= maxDim / w; w = maxDim; }
-      else if (h > maxDim) { w *= maxDim / h; h = maxDim; }
+      var maxDim = 800, w = img.width, h = img.height;
+      if (w > h && w > maxDim) { h *= maxDim / w; w = maxDim; } else if (h > maxDim) { w *= maxDim / h; h = maxDim; }
       canvas.width = w; canvas.height = h;
-      var ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, w, h);
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
       var dataUrl = canvas.toDataURL("image/jpeg", 0.7);
-      $("photoBase64").value = dataUrl;
-      $("previewImg").src = dataUrl;
-      $("previewImg").classList.remove("hidden");
+      $("photoBase64").value = dataUrl; $("previewImg").src = dataUrl; $("previewImg").classList.remove("hidden");
     };
     img.src = evt.target.result;
   };
   reader.readAsDataURL(file);
 };
 
-async function load(){
-  var res = await sb.from("boutiques").select("*").order("created_at", { ascending: false });
+$("publicForm").onsubmit = async function(e){
+  e.preventDefault();
+  $("saveBtn").disabled = true; $("saveBtn").textContent = "Transmission en cours...";
+
+  var data = {
+    id: Date.now() + "_" + Math.random().toString(36).slice(2,8),
+    name: $("name").value.trim(),
+    manager: $("manager").value.trim(),
+    phone: $("phone").value.trim(),
+    location: $("location").value.trim(),
+    gps: $("gps").value.trim(),
+    category: $("category").value,
+    canaux_vente: $("canauxVente").value,
+    freins_commerciaux: $("freinsCommerciaux").value,
+    principales_difficultes: $("difficultes").value.trim(),
+    attentes_solution: $("attentesSolution").value.trim(),
+    capacite_video: $("capaciteVideo").value,
+    budget_souhaite: $("budgetSouhaite").value,
+    photo: $("photoBase64").value,
+    date: new Date().toISOString().split('T')[0]
+  };
+
+  var res = await sb.from("boutiques").insert([data]);
+  
   if(res.error){
-    notice("Erreur lors du chargement : " + res.error.message, true);
+    notice("Erreur lors de l'envoi : " + res.error.message, true);
+    $("saveBtn").disabled = false; $("saveBtn").textContent = "Envoyer mes réponses à l'équipe FIAUSSÉ";
   } else {
-    shops = res.data || [];
-    render();
+    $("formCard").innerHTML = "<div style='text-align:center;padding:40px 10px;'><h2>Merci beaucoup pour votre temps ! 🎉</h2><p style='color:#64748b;font-size:15px;line-height:1.6;'>Vos réponses ont bien été transmises à l'équipe FIAUSSÉ.<br>Gédéon ou un membre de l'équipe vous recontactera très rapidement sur WhatsApp pour échanger sur la suite.</p></div>";
   }
-}
-
-function cls(s){
- if(s==="Intéressé"||s==="Prêt à discuter d'un test"||s==="Partenariat à organiser")return"green";
- if(s==="Souhaite réfléchir")return"orange";
- if(s==="Pas intéressé")return"red";
- return"";
-}
-function dateFr(v){if(!v)return"—";var p=v.split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:v;}
-
-function updateChart(positives, neutral, negatives) {
-  var canvas = $("interestChart");
-  if (!canvas) return;
-  var ctx = canvas.getContext("2d");
-  if (myChart) myChart.destroy();
-  myChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Favorables / Intéressés', 'En réflexion', 'Pas intéressés'],
-      datasets: [{
-        data: [positives, neutral, negatives],
-        backgroundColor: ['#22c55e', '#f97316', '#ef4444'],
-        borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
-      }
-    }
-  });
-}
-
-function render(){
- var favorable = shops.filter(function(x){return x.interest==="Intéressé"||x.interest==="Prêt à discuter d'un test"||x.interest==="Partenariat à organiser"}).length;
- var reflexiion = shops.filter(function(x){return x.interest==="Souhaite réfléchir"}).length;
- var refuse = shops.filter(function(x){return x.interest==="Pas intéressé"}).length;
-
- $("total").textContent = shops.length;
- $("interested").textContent = favorable;
- $("tests").textContent = shops.filter(function(x){return x.interest==="Prêt à discuter d'un test"}).length;
- $("partners").textContent = shops.filter(function(x){return x.interest==="Partenariat à organiser"}).length;
-
- updateChart(favorable, reflexiion, refuse);
-
- var q=$("search").value.toLowerCase().trim();
- var data=shops.filter(function(x){return !q || [x.name,x.manager,x.phone,x.location,x.category,x.interest,x.nextStep,x.objections,x.notes].join(" ").toLowerCase().indexOf(q)>=0;});
- 
- if(!data.length){$("list").innerHTML='<div class="empty">'+(shops.length?'Aucune boutique ne correspond à la recherche.':'<strong>Aucune boutique enregistrée.</strong><br><br>Commence par créer ta première fiche.')+'</div>';return;}
-
- $("list").innerHTML=data.map(function(x){
-  var extra="";
-  if(x.objections)extra+="<strong>Objections / questions :</strong><br>"+esc(x.objections);
-  if(x.notes)extra+=(extra?"<br><br>":"")+"<strong>Notes :</strong><br>"+esc(x.notes);
-
-  var gpsLink = x.gps ? '<a class="map-link" href="https://maps.google.com/?q='+encodeURIComponent(x.gps)+'" target="_blank">🗺️ Voir sur Google Maps</a>' : "—";
-  var photoHtml = x.photo ? '<img src="'+x.photo+'" class="shop-photo-preview" alt="Photo de la boutique">' : '';
-
-  return '<article class="shop" id="shop-'+esc(x.id)+'" onclick="toggleAccordion(\''+esc(x.id)+'\', event)">'+
-    '<div class="head">'+
-      '<div><div class="name">'+esc(x.name)+' <span class="toggle-icon">▼</span></div><div class="meta">'+esc(x.location||"Emplacement non renseigné")+'</div></div>'+
-      '<span class="badge '+cls(x.interest)+'">'+esc(x.interest||"Non renseigné")+'</span>'+
-    '</div>'+
-    '<div class="shop-body">'+
-      photoHtml +
-      '<div class="details">'+
-        '<div class="detail"><strong>Responsable</strong>'+esc(x.manager||"—")+'</div>'+
-        '<div class="detail"><strong>Téléphone / WhatsApp</strong>'+esc(x.phone||"—")+'</div>'+
-        '<div class="detail"><strong>Catégorie</strong>'+esc(x.category||"—")+'</div>'+
-        '<div class="detail"><strong>Carte / GPS</strong>'+gpsLink+'</div>'+
-        '<div class="detail"><strong>Date de visite</strong>'+esc(dateFr(x.date))+'</div>'+
-        '<div class="detail"><strong>Prochaine étape</strong>'+esc(x.nextStep||"—")+'</div>'+
-      '</div>'+
-      (extra?'<div class="notes">'+extra+'</div>':'')+
-      '<div class="shop-actions">'+
-        '<button class="small" onclick="event.stopPropagation(); edit(\''+esc(x.id)+'\')">Modifier</button>'+
-        '<button class="small" onclick="event.stopPropagation(); del(\''+esc(x.id)+'\')">Supprimer</button>'+
-      '</div>'+
-    '</div>'+
-  '</article>';
- }).join("");
-}
-
-window.toggleAccordion = function(shopId, event) {
-  var el = $("shop-" + shopId);
-  if (el) el.classList.toggle("open");
 };
-
-function show(view){
- var form=view==="form";
- $("formView").classList.toggle("hidden",!form);$("listView").classList.toggle("hidden",form);
- $("newTab").classList.toggle("active",form);$("listTab").classList.toggle("active",!form);
- if(!form) load();
-}
-
-function reset(){
- $("form").reset();$("editId").value="";$("photoBase64").value="";$("gps").value="";
- $("previewImg").classList.add("hidden");$("previewImg").src="";
- $("date").value=today();$("formTitle").textContent="Nouvelle boutique";$("saveBtn").textContent="Enregistrer la boutique";
-}
-
-window.edit = function(key){
- var x=shops.find(function(s){return String(s.id)===String(key)});if(!x)return;
- $("editId").value=x.id;$("name").value=x.name||"";$("manager").value=x.manager||"";$("phone").value=x.phone||"";$("location").value=x.location||"";
- $("gps").value=x.gps||"";
- $("category").value=x.category||"";$("date").value=x.date||today();$("interest").value=x.interest||"";$("nextStep").value=x.nextStep||"";
- $("objections").value=x.objections||"";$("notes").value=x.notes||"";
- $("photoBase64").value=x.photo||"";
- if(x.photo){
-   $("previewImg").src=x.photo; $("previewImg").classList.remove("hidden");
- } else {
-   $("previewImg").classList.add("hidden");
- }
- $("formTitle").textContent="Modifier la boutique";$("saveBtn").textContent="Enregistrer les modifications";show("form");window.scrollTo(0,0);
-};
-
-window.del = async function(key){
- var x=shops.find(function(s){return String(s.id)===String(key)});if(!x)return;
- if(!confirm("Supprimer la fiche « "+x.name+" » ?"))return;
- var res = await sb.from("boutiques").delete().eq("id", key);
- if(res.error){
-   notice("Erreur de suppression : " + res.error.message, true);
- } else {
-   notice("Boutique supprimée.");
-   load();
- }
-};
-
-$("newTab").onclick=function(){show("form")};$("listTab").onclick=function(){show("list")};$("resetBtn").onclick=reset;$("search").oninput=render;
-
-$("form").onsubmit = async function(e){
- e.preventDefault();
- var shopId = $("editId").value || id();
- var x = {
-   id: shopId,
-   name: $("name").value.trim(),
-   manager: $("manager").value.trim(),
-   phone: $("phone").value.trim(),
-   location: $("location").value.trim(),
-   gps: $("gps").value.trim(),
-   photo: $("photoBase64").value,
-   category: $("category").value,
-   date: $("date").value,
-   interest: $("interest").value,
-   nextStep: $("nextStep").value.trim(),
-   objections: $("objections").value.trim(),
-   notes: $("notes").value.trim()
- };
- if(!x.name){notice("Le nom de la boutique est obligatoire.",true);$("name").focus();return;}
- var editing = !!$("editId").value;
- 
- $("saveBtn").disabled = true;
- $("saveBtn").textContent = "Enregistrement...";
-
- var res = await sb.from("boutiques").upsert([x]);
- 
- $("saveBtn").disabled = false;
- $("saveBtn").textContent = editing ? "Enregistrer les modifications" : "Enregistrer la boutique";
-
- if(res.error){
-   notice("Erreur Supabase : " + res.error.message, true);
- } else {
-   reset();
-   show("list");
-   notice(editing ? "Boutique modifiée avec succès." : "Boutique enregistrée avec succès.");
- }
-};
-
-$("clear").onclick = async function(){
- if(!shops.length){notice("Aucune boutique à supprimer.",true);return}
- if(confirm("Supprimer TOUTES les boutiques de la base de données Supabase ?")){
-   var res = await sb.from("boutiques").delete().neq("id", "0");
-   if(res.error){
-     notice("Erreur lors de la suppression.", true);
-   } else {
-     load();
-     notice("Toutes les boutiques ont été supprimées.");
-   }
- }
-};
-
-$("export").onclick=function(){
- if(!shops.length){notice("Aucune boutique à exporter.",true);return}
- var h=["Nom","Responsable","Téléphone","Quartier","GPS","Catégorie","Date","Intérêt","Prochaine étape","Objections","Notes"];
- var rows=shops.map(function(x){return[x.name,x.manager,x.phone,x.location,x.gps,x.category,x.date,x.interest,x.nextStep,x.objections,x.notes]});
- function c(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'}
- var csv="\ufeff"+h.map(c).join(";")+"\n"+rows.map(function(r){return r.map(c).join(";")}).join("\n");
- var a=document.createElement("a"),u=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.href=u;a.download="fiausse_boutiques.csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
-};
-
-$("date").value=today();
-load();
 })();
 </script>
 </body>
