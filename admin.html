@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FIAUSSÉ — Espace Admin</title>
+<title>FIAUSSÉ — Espace Admin & Statistiques</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -11,33 +11,55 @@
 *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
 header{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;padding:22px 16px}
 .wrap{max-width:1100px;margin:auto;padding:0 16px}.brand{font-size:24px;font-weight:800}.sub{margin-top:5px;font-size:14px;opacity:.9}
-.card,.shop,.stat,.empty{background:#fff;border:1px solid var(--border);border-radius:14px}.card{padding:20px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:15px;background:#fff;border:1px solid var(--border);border-radius:14px}.num{font-size:25px;font-weight:900}.lbl{font-size:13px;color:var(--muted)}
+.card,.shop,.stat{background:#fff;border:1px solid var(--border);border-radius:14px}
+.card{padding:20px;margin-bottom:20px}
+.stats-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;margin:20px 0}
+.kpi-boxes{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stat{padding:18px;background:#fff;border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;justify-content:center}
+.num{font-size:28px;font-weight:900;color:var(--p)}.lbl{font-size:13px;color:var(--muted);margin-top:4px}
+.chart-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.chart-container{position:relative;width:100%;max-width:240px;height:240px}
 .toolbar{display:flex;gap:10px;margin-bottom:15px}.toolbar input{flex:1;padding:12px;border:1px solid var(--border);border-radius:9px}
-.btn,.small{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}.btn.secondary{background:#e8eef5;color:var(--text)}.btn.danger{background:#fee2e2;color:#991b1b}
+.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}.btn.secondary{background:#e8eef5;color:var(--text)}
 .shop-list{display:grid;gap:12px}
 .shop{padding:16px;background:#fff;border:1px solid var(--border);border-radius:14px;cursor:pointer}
-.head{display:flex;justify-content:space-between;align-items:center}.name{font-size:17px;font-weight:900}.meta{color:var(--muted);font-size:13px}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.name{font-size:17px;font-weight:900}.meta{color:var(--muted);font-size:13px;margin-top:2px}
 .shop-body{display:none;border-top:1px solid var(--border);margin-top:13px;padding-top:13px}
 .shop.open .shop-body{display:block}
 .details{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px}
 .detail strong{display:block;font-size:12px;color:var(--muted)}.notes{margin-top:10px;padding:10px;background:#f8fafc;border-radius:8px;font-size:13px}
 .shop-photo{width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:12px}
-.badge{padding:4px 8px;border-radius:6px;font-size:12px;font-weight:bold;background:#e2e8f0}
-@media(max-width:700px){.stats,.details{grid-template-columns:1fr}}
+.tag{padding:5px 10px;border-radius:20px;font-size:12px;font-weight:bold;display:inline-block}
+.tag.hot{background:#dcfce7;color:#15803d}
+.tag.warm{background:#e0f2fe;color:#0369a1}
+.tag.hesitant{background:#fef3c7;color:#b45309}
+.tag.cold{background:#fee2e2;color:#b91c1c}
+@media(max-width:800px){.stats-grid{grid-template-columns:1fr}.details{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><div class="brand">FIAUSSÉ — Administration</div><div class="sub">Tableau de bord et suivi des réponses boutiques</div></div></header>
+<header><div class="wrap"><div class="brand">FIAUSSÉ — Administration</div><div class="sub">Tableau de bord de prospection & Répartition de l'intérêt</div></div></header>
 
 <main class="wrap">
-<div class="stats">
-  <div class="stat"><div id="total" class="num">0</div><div class="lbl">Boutiques répondues</div></div>
-  <div class="stat"><div id="recent" class="num">0</div><div class="lbl">Aujourd'hui</div></div>
+
+<div class="stats-grid">
+  <div class="kpi-boxes">
+    <div class="stat"><div id="total" class="num">0</div><div class="lbl">Boutiques prospectées</div></div>
+    <div class="stat"><div id="recent" class="num">0</div><div class="lbl">Réponses aujourd'hui</div></div>
+    <div class="stat"><div id="interestedCount" class="num" style="color:#16a34a">0</div><div class="lbl">Boutiques chaudes (Très intéressées)</div></div>
+    <div class="stat"><div id="discussCount" class="num" style="color:#0284c7">0</div><div class="lbl">À recontacter (À discuter)</div></div>
+  </div>
+
+  <div class="chart-card">
+    <div style="font-size:13px;font-weight:800;color:var(--muted);margin-bottom:10px;">Répartition par Intérêt</div>
+    <div class="chart-container">
+      <canvas id="interestChart"></canvas>
+    </div>
+  </div>
 </div>
 
 <div class="toolbar">
-<input id="search" placeholder="Rechercher une boutique, un problème, une ville...">
+<input id="search" placeholder="Rechercher une boutique, gérant, quartier, téléphone...">
 <button id="export" class="btn secondary" type="button">Exporter CSV</button>
 </div>
 
@@ -48,15 +70,57 @@ header{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;padding:22p
 (function(){
 "use strict";
 var SUPABASE_URL = "https://jbxebdpurxeojyjcprpg.supabase.co";
-var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI" ; // <-- Mettre la clé publiable ici
+var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI" ; // <-- Insérer la clé publiable
 
 var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var shops = [];
+var chartInstance = null;
 var $ = function(id){return document.getElementById(id);};
 
 async function load(){
   var res = await sb.from("boutiques").select("*").order("created_at", { ascending: false });
-  if(!res.error){ shops = res.data || []; render(); }
+  if(!res.error){ shops = res.data || []; render(); updateChart(); }
+}
+
+function updateChart(){
+  var counts = { "Très intéressé": 0, "À discuter": 0, "Hésitant": 0, "Pas intéressé": 0, "Non précisé": 0 };
+  
+  shops.forEach(function(x){
+    var k = x.niveau_interet || "Non précisé";
+    if(counts[k] !== undefined) counts[k]++;
+    else counts["Non précisé"]++;
+  });
+
+  $("interestedCount").textContent = counts["Très intéressé"];
+  $("discussCount").textContent = counts["À discuter"];
+
+  var ctx = $("interestChart").getContext("2d");
+  if(chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Très intéressé', 'À discuter', 'Hésitant', 'Pas intéressé', 'Non précisé'],
+      datasets: [{
+        data: [counts["Très intéressé"], counts["À discuter"], counts["Hésitant"], counts["Pas intéressé"], counts["Non précisé"]],
+        backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#94a3b8'],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } }
+    }
+  });
+}
+
+function getTagClass(interet){
+  if(interet === "Très intéressé") return "tag hot";
+  if(interet === "À discuter") return "tag warm";
+  if(interet === "Hésitant") return "tag hesitant";
+  if(interet === "Pas intéressé") return "tag cold";
+  return "tag";
 }
 
 function render(){
@@ -74,37 +138,32 @@ function render(){
       <div class="head">
         <div>
           <div class="name">${x.name || 'Sans nom'}</div>
-          <div class="meta">📍 ${x.location || '—'} | 👤 ${x.manager || '—'} (${x.phone || '—'})</div>
+          <div class="meta">📍 ${x.location || '—'} | 👤 ${x.manager || '—'} (<a href="https://wa.me/${(x.phone||'').replace(/\s+/g,'')}" target="_blank" onclick="event.stopPropagation()">${x.phone || '—'}</a>)</div>
         </div>
-        <span class="badge">${x.category || 'Général'}</span>
+        <span class="${getTagClass(x.niveau_interet)}">${x.niveau_interet || 'Non spécifié'}</span>
       </div>
       <div class="shop-body">
         ${x.photo ? `<img src="${x.photo}" class="shop-photo">` : ''}
         <div class="details">
-          <div class="detail"><strong>Canal de vente :</strong>${x.canaux_vente || '—'}</div>
-          <div class="detail"><strong>GPS :</strong>${x.gps ? `<a href="https://maps.google.com/?q=${x.gps}" target="_blank">🗺️ Voir sur la carte</a>` : '—'}</div>
+          <div class="detail"><strong>Catégorie :</strong>${x.category || '—'}</div>
+          <div class="detail"><strong>Canal actuel :</strong>${x.canaux_vente || '—'}</div>
+          <div class="detail"><strong>Vidéo :</strong>${x.capacite_video || '—'}</div>
+          <div class="detail"><strong>Modèle préféré :</strong>${x.budget_souhaite || '—'}</div>
+          <div class="detail" style="grid-column:1/-1"><strong>GPS :</strong>${x.gps ? `<a href="https://maps.google.com/?q=${x.gps}" target="_blank">🗺️ Voir la position sur Google Maps</a>` : '—'}</div>
         </div>
-        <div class="notes"><strong>🚨 Difficultés rencontrées :</strong><br>${x.principales_difficultes || 'Non renseigné'}</div>
-        <div class="notes"><strong>🎯 Besoin principal :</strong><br>${x.besoin_principal || 'Non renseigné'}</div>
+        <div class="notes"><strong>🚨 Difficultés / Freins :</strong><br>${x.freins_commerciaux || ''}<br>${x.principales_difficultes || ''}</div>
+        <div class="notes"><strong>🎯 Attentes FIAUSSÉ :</strong><br>${x.attentes_solution || '—'}</div>
       </div>
-      <div class="details">
-        <div class="detail"><strong>Canal :</strong>${x.canaux_vente || '—'}</div>
-        <div class="detail"><strong>Outil de gestion :</strong>${x.outil_gestion || '—'}</div>
-        <div class="detail"><strong>Prêt pour la vidéo :</strong>${x.capacite_video || '—'}</div>
-        <div class="detail"><strong>Budget envisageable :</strong>${x.budget_souhaite || '—'}</div>
-      </div>
-      <div class="notes"><strong>🚨 Frein majeur :</strong> ${x.freins_commerciaux || '—'}<br>${x.principales_difficultes || ''}</div>
-      <div class="notes"><strong>🎯 Attentes FIAUSSÉ :</strong> ${x.attentes_solution || '—'}</div>
     </article>
   `).join("");
 }
 
 $("search").oninput = render;
 $("export").onclick = function(){
-  var csv = "\ufeff" + "Nom;Gérant;Téléphone;Quartier;Catégorie;Difficultés;Besoins\n" + 
-    shops.map(x => `"${x.name}";"${x.manager}";"${x.phone}";"${x.location}";"${x.category}";"${x.principales_difficultes}";"${x.besoin_principal}"`).join("\n");
+  var csv = "\ufeff" + "Nom;Gérant;Téléphone;Quartier;Catégorie;Intérêt;Difficultés;Attentes\n" + 
+    shops.map(x => `"${x.name}";"${x.manager}";"${x.phone}";"${x.location}";"${x.category}";"${x.niveau_interet}";"${x.principales_difficultes}";"${x.attentes_solution}"`).join("\n");
   var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], {type: "text/csv"}));
-  a.download = "reponses_boutiques.csv"; a.click();
+  a.download = "prospection_boutiques.csv"; a.click();
 };
 
 load();
