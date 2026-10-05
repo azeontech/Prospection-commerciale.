@@ -87,6 +87,14 @@ function render(){
         <div class="notes"><strong>🚨 Difficultés rencontrées :</strong><br>${x.principales_difficultes || 'Non renseigné'}</div>
         <div class="notes"><strong>🎯 Besoin principal :</strong><br>${x.besoin_principal || 'Non renseigné'}</div>
       </div>
+      <div class="details">
+        <div class="detail"><strong>Canal :</strong>${x.canaux_vente || '—'}</div>
+        <div class="detail"><strong>Outil de gestion :</strong>${x.outil_gestion || '—'}</div>
+        <div class="detail"><strong>Prêt pour la vidéo :</strong>${x.capacite_video || '—'}</div>
+        <div class="detail"><strong>Budget envisageable :</strong>${x.budget_souhaite || '—'}</div>
+      </div>
+      <div class="notes"><strong>🚨 Frein majeur :</strong> ${x.freins_commerciaux || '—'}<br>${x.principales_difficultes || ''}</div>
+      <div class="notes"><strong>🎯 Attentes FIAUSSÉ :</strong> ${x.attentes_solution || '—'}</div>
     </article>
   `).join("");
 }
