@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FIAUSSÉ — Étude Approfondie Boutique</title>
+<title>FIAUSSÉ — Questionnaire Partenaire</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--p:#0ea5e9;--pd:#0284c7;--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#64748b;--border:#dbe3ee}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
 header{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;padding:25px 16px;text-align:center}
-.wrap{max-width:700px;margin:20px auto;padding:0 16px}.brand{font-size:24px;font-weight:800}.sub{margin-top:6px;font-size:14px;opacity:.9}
+.wrap{max-width:700px;margin:20px auto;padding:0 16px}.brand{font-size:26px;font-weight:900;letter-spacing:1px}.sub{margin-top:6px;font-size:15px;opacity:.95}
+.intro-box{background:#e0f2fe;border:1px solid #bae6fd;color:#0369a1;padding:16px;border-radius:12px;margin-bottom:20px;font-size:14px;line-height:1.5}
 .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,0.03);margin-bottom:20px}
-.section-title{font-size:16px;font-weight:800;color:var(--p);border-bottom:2px solid var(--bg);padding-bottom:8px;margin-bottom:16px;margin-top:0}
+.section-title{font-size:15px;font-weight:800;color:var(--p);border-bottom:2px solid var(--bg);padding-bottom:8px;margin-bottom:16px;margin-top:0;text-transform:uppercase;letter-spacing:0.5px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}
-label{font-size:14px;font-weight:700;color:var(--text)}input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:9px;font:inherit}
-textarea{min-height:80px;resize:vertical}
-.btn{border:0;border-radius:10px;padding:15px;font-weight:800;background:var(--p);color:#fff;cursor:pointer;width:100%;font-size:16px;margin-top:10px}
+label{font-size:13px;font-weight:700;color:var(--text)}input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:9px;font:inherit}
+textarea{min-height:85px;resize:vertical}
+.btn{border:0;border-radius:10px;padding:16px;font-weight:800;background:var(--p);color:#fff;cursor:pointer;width:100%;font-size:16px;margin-top:10px}
 .btn:hover{background:var(--pd)}
 .notice{display:none;padding:14px;margin-bottom:16px;border-radius:9px;font-weight:700;text-align:center}.notice.show{display:block}.ok{background:#dcfce7;color:#166534}.err{background:#fee2e2;color:#991b1b}
 .gps-btn{background:#e0f2fe;color:#0369a1;padding:9px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;margin-top:4px}
@@ -27,116 +28,103 @@ textarea{min-height:80px;resize:vertical}
 <body>
 <header>
   <div class="brand">FIAUSSÉ</div>
-  <div class="sub">Enquête Partenaire — Diagnostic & Besoins des Boutiques</div>
+  <div class="sub">Enquête & Diagnostic Commercial Boutiques</div>
 </header>
 
 <main class="wrap">
 <div id="notice" class="notice"></div>
 
+<div class="intro-box">
+  👋 <strong>Bonjour !</strong> Merci de prendre 2 minutes pour échanger avec nous. L'objectif est de comprendre la réalité de votre commerce afin d'adapter l'expérience FIAUSSÉ à vos besoins.
+</div>
+
 <section class="card" id="formCard">
 <form id="publicForm">
 <input id="photoBase64" type="hidden">
 
-<!-- SECTION 1 -->
-<h3 class="section-title">1. Informations Générales</h3>
+<h3 class="section-title">1. Votre Boutique</h3>
 <div class="grid">
-  <div class="field full"><label>Nom de votre boutique *</label><input id="name" required placeholder="Ex. Grace & Mode Togo"></div>
-  <div class="field"><label>Nom du responsable / gérant *</label><input id="manager" required placeholder="Ex. Mme Koffi"></div>
-  <div class="field"><label>Téléphone / WhatsApp *</label><input id="phone" type="tel" required placeholder="+228 90 00 00 00"></div>
-  <div class="field"><label>Quartier / Ville *</label><input id="location" required placeholder="Ex. Agoè Assiyéyé, Lomé"></div>
-  <div class="field">
+  <div class="field full"><label>Nom de votre boutique *</label><input id="name" required placeholder="Ex. Boutique Grace & Mode"></div>
+  <div class="field"><label>Nom & Prénom du responsable *</label><input id="manager" required placeholder="Ex. M. Koffi"></div>
+  <div class="field"><label>Numéro WhatsApp direct *</label><input id="phone" type="tel" required placeholder="+228 90 00 00 00"></div>
+  <div class="field"><label>Quartier / Emplacement à Lomé *</label><input id="location" required placeholder="Ex. Agoè Assiyéyé"></div>
+  <div class="field full">
     <label>Localisation GPS (Optionnel)</label>
     <input id="gps" placeholder="Ex. 6.137, 1.212" readonly>
-    <button type="button" class="gps-btn" id="getGpsBtn">📍 Partager ma position</button>
+    <button type="button" class="gps-btn" id="getGpsBtn">📍 Cliquer ici pour joindre ma position GPS</button>
   </div>
 </div>
 
 <br>
-<!-- SECTION 2 -->
-<h3 class="section-title">2. Votre Activité & Canaux de Vente</h3>
+
+<h3 class="section-title">2. Votre Vente au Quotidien</h3>
 <div class="grid">
   <div class="field"><label>Secteur d'activité *</label><select id="category" required>
     <option value="">Sélectionner</option>
-    <option>Mode, Vêtements & Chaussures</option>
+    <option>Habillement, Chaussures & Mode</option>
     <option>Cosmétique, Beauté & Parfumerie</option>
     <option>Électronique, Téléphones & High-Tech</option>
-    <option>Alimentation, Épicerie & Superette</option>
-    <option>Maison, Décoration & Électroménager</option>
-    <option>Autre secteur</option>
-  </select></div>
-  
-  <div class="field"><label>Quels produits vendez-vous le plus ?</label><input id="typesProduits" placeholder="Ex. Robes de soirée, mèches, accessoires"></div>
-
-  <div class="field"><label>Où vendez-vous actuellement ?</label><select id="canauxVente">
-    <option value="">Sélectionner</option>
-    <option>Boutique physique uniquement</option>
-    <option>WhatsApp / Statut WhatsApp principalement</option>
-    <option>Réseaux sociaux (Facebook, Instagram, TikTok)</option>
-    <option>Mixte (Boutique physique + Réseaux sociaux)</option>
+    <option>Alimentation & Produits de consommation</option>
+    <option>Maison & Décoration</option>
+    <option>Autre activité</option>
   </select></div>
 
-  <div class="field"><label>Comment gérez-vous la livraison ?</label><select id="modeLivraison">
+  <div class="field"><label>Canal de vente principal</label><select id="canauxVente">
     <option value="">Sélectionner</option>
-    <option>Le client se déplace en boutique</option>
-    <option>Coursiers indépendants (Zem / Gozem)</option>
-    <option>Propre livreur interne</option>
-    <option>Pas de service de livraison</option>
+    <option>Uniquement les clients physiques</option>
+    <option>Statuts WhatsApp & Groupes</option>
+    <option>Facebook, Instagram, TikTok</option>
+    <option>Boutique physique + Réseaux sociaux</option>
   </select></div>
+
+  <div class="field full"><label>Aujourd'hui, quelle est la plus grande difficulté de votre boutique ? *</label><select id="freinsCommerciaux" required>
+    <option value="">Sélectionner le problème majeur</option>
+    <option>Pas assez de nouveaux clients / Manque de visibilité</option>
+    <option>Les clients demandent les prix sur WhatsApp mais n'achètent pas</option>
+    <option>Gestion des livraisons compliquée ou trop chère</option>
+    <option>Difficulté à présenter tout le catalogue aux clients</option>
+    <option>Gestion du stock et de la caisse difficile</option>
+  </select></div>
+
+  <div class="field full"><label>Dites-nous ce qui vous aiderait le plus à vendre davantage :</label><textarea id="difficultes" required placeholder="Ex. Avoir des clients sérieux, mieux présenter mes produits..."></textarea></div>
 </div>
 
 <br>
-<!-- SECTION 3 -->
-<h3 class="section-title">3. Vos Difficultés actuelles</h3>
+
+<h3 class="section-title">3. Intérêt & Projection Partenariat</h3>
 <div class="grid">
-  <div class="field"><label>Comment gérez-vous votre stock & caisse ?</label><select id="outilGestion">
-    <option value="">Sélectionner</option>
-    <option>Cahier / Registre papier</option>
-    <option>Fichier Excel / Google Sheets</option>
-    <option>Logiciel de caisse / Application mobile</option>
-    <option>Tout est de mémoire</option>
+  <div class="field full"><label>Seriez-vous intéressé(e) pour tester FIAUSSÉ en avant-première pour votre boutique ? *</label><select id="niveauInteret" required>
+    <option value="">Sélectionner votre position</option>
+    <option value="Très intéressé">🔥 Oui, très intéressé(e) — Je veux démarrer rapidement</option>
+    <option value="À discuter">💬 Intéressé(e) mais je souhaite échanger de vive voix</option>
+    <option value="Hésitant">🤔 Hésitant — J'ai besoin de plus d'explications</option>
+    <option value="Pas intéressé">❌ Non intéressé(e) pour le moment</option>
   </select></div>
 
-  <div class="field"><label>Quels sont vos plus grands freins au quotidien ? *</label><select id="freinsCommerciaux" required>
-    <option value="">Sélectionner le problème principal</option>
-    <option>Manque de visibilité / Pas assez de nouveaux clients</option>
-    <option>Difficulté à présenter le catalogue aux clients</option>
-    <option>Gestion des livraisons trop complexe / chère</option>
-    <option>Impayés ou annulations de commandes</option>
-    <option>Gestion de stock compliquée</option>
-  </select></div>
+  <div class="field full"><label>Qu'attendez-vous principalement de notre solution ? *</label><textarea id="attentesSolution" required placeholder="Ex. Me donner de la visibilité, gérer la commande en direct..."></textarea></div>
 
-  <div class="field full"><label>Expliquez-nous en détail le plus gros problème de votre boutique :</label><textarea id="difficultes" required placeholder="Dites-nous ce qui vous fatigue le plus dans votre commerce actuellement..."></textarea></div>
-</div>
-
-<br>
-<!-- SECTION 4 -->
-<h3 class="section-title">4. Attentes envers la plateforme FIAUSSÉ</h3>
-<div class="grid">
-  <div class="field full"><label>Qu'attendez-vous principalement d'une nouvelle application commerciale ? *</label><textarea id="attentesSolution" required placeholder="Ex. Plus de ventes, des clients sérieux, une plateforme vidéo pour montrer mes produits, la livraison gérée..."></textarea></div>
-
-  <div class="field"><label>Seriez-vous prêt à enregistrer de courtes vidéos de vos produits ? *</label><select id="capaciteVideo" required>
+  <div class="field"><label>Seriez-vous prêt à présenter vos produits en vidéo ? *</label><select id="capaciteVideo" required>
     <option value="">Sélectionner</option>
-    <option>Oui, je fais déjà des vidéos</option>
-    <option>Oui, si on m'explique comment faire</option>
+    <option>Oui, je fais déjà des vidéos / photos</option>
+    <option>Oui, si l'équipe FIAUSSÉ m'accompagne</option>
     <option>Non, je préfère uniquement des photos</option>
   </select></div>
 
-  <div class="field"><label>Quel budget mensuel seriez-vous prêt à investir si l'application booste vos ventes ?</label><select id="budgetSouhaite">
+  <div class="field"><label>Si les ventes augmentent, quel modèle préférez-vous ?</label><select id="budgetSouhaite">
     <option value="">Sélectionner</option>
-    <option>Gratuit / Commission sur vente uniquement</option>
-    <option>5 000 – 10 000 FCFA / mois</option>
-    <option>10 000 – 25 000 FCFA / mois</option>
-    <option>Plus de 25 000 FCFA / mois</option>
+    <option>Commission uniquement sur les ventes réalisées</option>
+    <option>Abonnement mensuel fixe (5 000 - 10 000 FCFA)</option>
+    <option>À discuter lors de l'échange</option>
   </select></div>
 
   <div class="field full">
-    <label>Photo de la boutique / du produit phare (Optionnel)</label>
+    <label>Photo de la devanture ou d'un produit phare (Optionnel)</label>
     <input type="file" id="photoInput" accept="image/*">
     <img id="previewImg" class="photo-thumb hidden" alt="Aperçu">
   </div>
 </div>
 
-<button class="btn" type="submit" id="saveBtn">Envoyer mon diagnostic</button>
+<button class="btn" type="submit" id="saveBtn">Envoyer mes réponses à l'équipe FIAUSSÉ</button>
 </form>
 </section>
 </main>
@@ -145,7 +133,7 @@ textarea{min-height:80px;resize:vertical}
 (function(){
 "use strict";
 var SUPABASE_URL = "https://jbxebdpurxeojyjcprpg.supabase.co";
-var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI" ; // <-- Mettre la clé publiable ici
+var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI" ; // <-- Clé publiable (anon)
 
 var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var $ = function(id){return document.getElementById(id);};
@@ -185,7 +173,7 @@ $("photoInput").onchange = function(e) {
 
 $("publicForm").onsubmit = async function(e){
   e.preventDefault();
-  $("saveBtn").disabled = true; $("saveBtn").textContent = "Envoi en cours...";
+  $("saveBtn").disabled = true; $("saveBtn").textContent = "Transmission en cours...";
 
   var data = {
     id: Date.now() + "_" + Math.random().toString(36).slice(2,8),
@@ -195,12 +183,10 @@ $("publicForm").onsubmit = async function(e){
     location: $("location").value.trim(),
     gps: $("gps").value.trim(),
     category: $("category").value,
-    types_produits: $("typesProduits").value.trim(),
     canaux_vente: $("canauxVente").value,
-    mode_livraison: $("modeLivraison").value,
-    outil_gestion: $("outilGestion").value,
     freins_commerciaux: $("freinsCommerciaux").value,
     principales_difficultes: $("difficultes").value.trim(),
+    niveau_interet: $("niveauInteret").value,
     attentes_solution: $("attentesSolution").value.trim(),
     capacite_video: $("capaciteVideo").value,
     budget_souhaite: $("budgetSouhaite").value,
@@ -212,9 +198,9 @@ $("publicForm").onsubmit = async function(e){
   
   if(res.error){
     notice("Erreur lors de l'envoi : " + res.error.message, true);
-    $("saveBtn").disabled = false; $("saveBtn").textContent = "Envoyer mon diagnostic";
+    $("saveBtn").disabled = false; $("saveBtn").textContent = "Envoyer mes réponses";
   } else {
-    $("formCard").innerHTML = "<div style='text-align:center;padding:40px 10px;'><h2>Merci beaucoup ! 🎉</h2><p style='color:#64748b;font-size:15px;line-height:1.5;'>Vos réponses ont bien été enregistrées.<br>L'équipe FIAUSSÉ analysera votre besoin pour vous recontacter très rapidement sur WhatsApp.</p></div>";
+    $("formCard").innerHTML = "<div style='text-align:center;padding:40px 10px;'><h2>Merci beaucoup ! 🎉</h2><p style='color:#64748b;font-size:15px;'>Vos réponses ont bien été enregistrées.<br>L'équipe FIAUSSÉ vous recontacteront très vite sur WhatsApp.</p></div>";
   }
 };
 })();
