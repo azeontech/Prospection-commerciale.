@@ -2,77 +2,174 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#1479b8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FIAUSSÉ — Suivi des boutiques</title>
 <style>
-:root{--blue:#1479b8;--deep:#105783;--pale:#eaf5fc;--ink:#172b3a;--muted:#647789;--line:#dce6ed;--bg:#f4f7fa;--white:#fff;--green:#16845b;--red:#b83c42}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-header{background:linear-gradient(120deg,var(--deep),var(--blue));color:white;padding:28px 20px 34px}
-.wrap{max-width:1050px;margin:auto}header .eyebrow{font-size:12px;letter-spacing:.13em;font-weight:700;opacity:.85}h1{font-size:clamp(25px,4vw,36px);line-height:1.15;margin:8px 0}header p{max-width:650px;margin:8px 0 0;color:#e6f4fc}
-main{max-width:1050px;margin:-16px auto 50px;padding:0 16px}.tabs{display:flex;gap:8px;margin-bottom:16px}.tab{border:1px solid var(--line);background:white;color:var(--deep);padding:10px 16px;border-radius:12px;font-weight:700;cursor:pointer}.tab.active{background:var(--deep);color:white;border-color:var(--deep)}
-.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 28px #15364a0a}.panel h2{font-size:20px;margin:0 0 5px}.hint{color:var(--muted);margin:0 0 20px;font-size:14px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}label{font-size:13px;font-weight:700;color:#334b5d}input,select,textarea{width:100%;border:1px solid #cbd8e2;border-radius:10px;padding:11px 12px;font:inherit;color:var(--ink);background:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #1479b81c}textarea{min-height:90px;resize:vertical}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:750;cursor:pointer}.primary{background:var(--blue);color:white}.secondary{background:var(--pale);color:var(--deep)}.danger{background:#fff0f0;color:var(--red)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.stat{background:var(--pale);border-radius:13px;padding:13px}.stat strong{display:block;font-size:24px;color:var(--deep)}.stat span{font-size:12px;color:#496579}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.toolbar input{flex:1;min-width:190px}.list{display:grid;gap:10px}.record{border:1px solid var(--line);border-radius:13px;padding:15px;display:flex;justify-content:space-between;gap:15px;align-items:flex-start}.record h3{margin:0 0 4px;font-size:16px}.record p{margin:3px 0;color:var(--muted);font-size:13px}.pill{display:inline-block;border-radius:99px;padding:3px 9px;font-size:11px;font-weight:800;background:#eef2f5;color:#455b6b}.pill.good{background:#e6f6ef;color:#14724e}.pill.mid{background:#fff4df;color:#94620c}.record-actions{display:flex;gap:7px;flex-shrink:0}.record-actions button{border:1px solid var(--line);background:white;border-radius:8px;padding:7px 9px;cursor:pointer}.empty{text-align:center;padding:35px 15px;color:var(--muted)}.hidden{display:none!important}.notice{font-size:12px;color:var(--muted);margin-top:15px}.foot{color:var(--muted);font-size:12px;text-align:center;margin:18px 0}
-@media(max-width:650px){.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.stats{grid-template-columns:1fr 1fr}.record{display:block}.record-actions{margin-top:12px}.panel{padding:17px}.tabs{display:grid;grid-template-columns:1fr 1fr}}
+:root{--p:#0ea5e9;--pd:#0284c7;--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#64748b;--border:#dbe3ee}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;padding:22px 16px}
+.wrap{max-width:1050px;margin:auto;padding:0 16px}.brand{font-size:24px;font-weight:800}.sub{margin-top:5px;font-size:14px;opacity:.9}
+.tabs{display:flex;gap:10px;margin:20px 0 16px}.tab,.btn,.small{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer}
+.tab{background:#fff;border:1px solid var(--border)}.tab.active,.primary{background:var(--p);color:#fff}.secondary{background:#e8eef5;color:var(--text)}.danger{background:#fee2e2;color:#991b1b}
+.card,.shop,.stat,.empty{background:#fff;border:1px solid var(--border);border-radius:14px}.card{padding:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.field{display:flex;flex-direction:column;gap:7px}.full{grid-column:1/-1}
+label{font-size:14px;font-weight:700}input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:9px;font:inherit}textarea{min-height:100px;resize:vertical}
+.actions,.toolbar,.shop-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.btn{display:inline-block}
+.notice{display:none;padding:12px 14px;margin:16px 0;border-radius:9px;font-weight:700}.notice.show{display:block}.ok{background:#dcfce7;color:#166534}.err{background:#fee2e2;color:#991b1b}
+.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}.stat{padding:15px}.num{font-size:25px;font-weight:900}.lbl{font-size:13px;color:var(--muted)}
+.toolbar{margin-top:0}.toolbar input{flex:1;min-width:220px}.shop-list{display:grid;gap:12px}.shop{padding:16px}.head{display:flex;justify-content:space-between;gap:12px}.name{font-size:18px;font-weight:900}.meta{color:var(--muted);font-size:13px;margin-top:4px}
+.badge{padding:6px 9px;border-radius:999px;font-size:12px;font-weight:800;background:#dbeafe;color:#1d4ed8;height:max-content}.green{background:#dcfce7;color:#166534}.orange{background:#ffedd5;color:#9a3412}.red{background:#fee2e2;color:#991b1b}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-top:13px;font-size:14px}.detail strong{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}.notes{border-top:1px solid var(--border);margin-top:13px;padding-top:13px;white-space:pre-wrap;font-size:14px}.empty{text-align:center;padding:45px 20px;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
+@media(max-width:700px){.grid,.details,.stats{grid-template-columns:1fr}.full{grid-column:auto}.head{flex-direction:column}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><div class="eyebrow">OUTIL DE PROSPECTION TERRAIN</div><h1>FIAUSSÉ — Suivi des boutiques</h1><p>Enregistre chaque rencontre avec un commerçant, retrouve tes échanges et suis les prochaines étapes de partenariat.</p></div></header>
-<main>
-  <div class="tabs">
-    <button class="tab active" id="tab-form" type="button">＋ Nouvelle visite</button>
-    <button class="tab" id="tab-list" type="button">Mes boutiques <span id="count-tab"></span></button>
-  </div>
-  <section class="panel" id="form-panel">
-    <h2 id="form-title">Fiche de prospection</h2><p class="hint">Remplis cette fiche après chaque rencontre. Les champs peuvent rester vides si tu n'as pas l'information.</p>
-    <form id="shop-form">
-      <input type="hidden" id="edit-id">
-      <div class="grid">
-        <div class="field"><label for="shop">Nom de la boutique *</label><input id="shop" required placeholder="Ex. Boutique Chez Ama"></div>
-        <div class="field"><label for="manager">Nom du gérant / responsable</label><input id="manager" placeholder="Nom et prénom"></div>
-        <div class="field"><label for="phone">Téléphone / WhatsApp</label><input id="phone" type="tel" placeholder="+228 ..."></div>
-        <div class="field"><label for="area">Quartier / emplacement</label><input id="area" placeholder="Ex. Agoè, Adidogomé..."></div>
-        <div class="field"><label for="category">Catégorie de produits</label><select id="category"><option value="">Choisir une catégorie</option><option>Maison et décoration</option><option>Électroménager</option><option>Cuisine et ustensiles</option><option>Mode et accessoires</option><option>Téléphones et accessoires</option><option beauté et soins</option><option>Produits du quotidien</option><option>Autre</option></select></div>
-        <div class="field"><label for="date">Date de la visite</label><input id="date" type="date"></div>
-        <div class="field"><label for="interest">Niveau d'intérêt</label><select id="interest"><option value="">À déterminer</option><option>Pas intéressé</option><option>Souhaite réfléchir</option><option>Intéressé</option><option>Prêt à discuter d'un test</option><option>Partenariat à organiser</option></select></div>
-        <div class="field"><label for="follow">Prochaine étape</label><input id="follow" placeholder="Ex. Rappeler vendredi, envoyer les détails..."></div>
-        <div class="field full"><label for="objections">Questions, objections ou préoccupations</label><textarea id="objections" placeholder="Prix, livraison, disponibilité, fonctionnement, confiance..."></textarea></div>
-        <div class="field full"><label for="notes">Notes complémentaires</label><textarea id="notes" placeholder="Ce que le commerçant a expliqué, ses besoins, ses conditions..."></textarea></div>
-      </div>
-      <div class="actions"><button class="btn primary" type="submit" id="save-btn">Enregistrer cette visite</button><button class="btn secondary" type="button" id="reset-btn">Effacer le formulaire</button></div>
-      <p class="notice">Tes fiches sont enregistrées dans le navigateur de cet appareil. Elles ne sont pas automatiquement partagées avec d'autres téléphones ou ordinateurs.</p>
-    </form>
-  </section>
-  <section class="panel hidden" id="list-panel">
-    <h2>Mes boutiques enregistrées</h2><p class="hint">Consulte, modifie ou exporte tes fiches de prospection.</p>
-    <div class="stats"><div class="stat"><strong id="total">0</strong><span>Visites enregistrées</span></div><div class="stat"><strong id="interested">0</strong><span>Intéressés ou plus</span></div><div class="stat"><strong id="followups">0</strong><span>À relancer</span></div></div>
-    <div class="toolbar"><input id="search" placeholder="Rechercher une boutique, un quartier..."><button class="btn secondary" id="export-btn" type="button">Exporter en CSV</button></div>
-    <div class="list" id="records"></div>
-    <p class="notice">Conseil : exporte régulièrement le fichier CSV pour conserver une copie de sauvegarde.</p>
-  </section>
-  <div class="foot">FIAUSSÉ · Outil interne de suivi commercial</div>
+<header><div class="wrap"><div class="brand">FIAUSSÉ — Suivi des boutiques</div><div class="sub">Prospection terrain et suivi des partenaires</div></div></header>
+
+<main class="wrap">
+<div id="notice" class="notice"></div>
+<div class="tabs">
+<button id="newTab" class="tab active" type="button">＋ Nouvelle visite</button>
+<button id="listTab" class="tab" type="button">Mes boutiques</button>
+</div>
+
+<section id="formView" class="card">
+<h2 id="formTitle">Nouvelle boutique</h2>
+<p style="color:#64748b">Remplis cette fiche après chaque visite. Chaque boutique est enregistrée séparément.</p>
+<form id="form">
+<input id="editId" type="hidden">
+<div class="grid">
+<div class="field"><label>Nom de la boutique *</label><input id="name" required placeholder="Ex. Boutique Chez Ama"></div>
+<div class="field"><label>Nom du gérant / responsable</label><input id="manager" placeholder="Ex. M. Koffi"></div>
+<div class="field"><label>Téléphone / WhatsApp</label><input id="phone" type="tel" placeholder="+228 ..."></div>
+<div class="field"><label>Quartier / emplacement</label><input id="location" placeholder="Ex. Agoè"></div>
+<div class="field"><label>Catégorie de produits</label><select id="category">
+<option value="">Sélectionner</option><option>Maison</option><option>Cuisine</option><option>Mode</option><option>Beauté et soins</option><option>Électronique</option><option>Alimentation</option><option>Autre</option>
+</select></div>
+<div class="field"><label>Date de la visite</label><input id="date" type="date"></div>
+<div class="field"><label>Niveau d'intérêt</label><select id="interest">
+<option value="">Sélectionner</option><option>Pas intéressé</option><option>Souhaite réfléchir</option><option>Intéressé</option><option>Prêt à discuter d'un test</option><option>Partenariat à organiser</option>
+</select></div>
+<div class="field"><label>Prochaine étape</label><input id="nextStep" placeholder="Ex. Revenir vendredi"></div>
+<div class="field full"><label>Questions, objections ou préoccupations</label><textarea id="objections" placeholder="Ex. Commission, livraison, paiement..."></textarea></div>
+<div class="field full"><label>Notes complémentaires</label><textarea id="notes" placeholder="Informations importantes..."></textarea></div>
+</div>
+<div class="actions"><button class="btn primary" type="submit" id="saveBtn">Enregistrer la boutique</button><button class="btn secondary" type="button" id="resetBtn">Effacer</button></div>
+</form>
+</section>
+
+<section id="listView" class="hidden">
+<div class="stats">
+<div class="stat"><div id="total" class="num">0</div><div class="lbl">Boutiques</div></div>
+<div class="stat"><div id="interested" class="num">0</div><div class="lbl">Intéressées</div></div>
+<div class="stat"><div id="tests" class="num">0</div><div class="lbl">Prêtes pour un test</div></div>
+<div class="stat"><div id="partners" class="num">0</div><div class="lbl">Partenariats à organiser</div></div>
+</div>
+<div class="toolbar">
+<input id="search" placeholder="Rechercher une boutique, un gérant, un quartier...">
+<button id="export" class="btn secondary" type="button">Exporter CSV</button>
+<button id="clear" class="btn danger" type="button">Tout supprimer</button>
+</div>
+<div id="list" class="shop-list"></div>
+</section>
 </main>
+<footer>FIAUSSÉ — Les données sont sauvegardées dans le navigateur utilisé.</footer>
+
 <script>
-const KEY='fiausse_prospection_v1';
-const $=id=>document.getElementById(id);
-let records=load();
-function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
-function persist(){localStorage.setItem(KEY,JSON.stringify(records));render()}
-function val(id){return $(id).value.trim()}
-function setTab(which){$('form-panel').classList.toggle('hidden',which!=='form');$('list-panel').classList.toggle('hidden',which!=='list');$('tab-form').classList.toggle('active',which==='form');$('tab-list').classList.toggle('active',which==='list');if(which==='list')render()}
-$('tab-form').onclick=()=>setTab('form');$('tab-list').onclick=()=>setTab('list');
-$('date').value=new Date().toISOString().slice(0,10);
-function resetForm(){ $('shop-form').reset();$('edit-id').value='';$('date').value=new Date().toISOString().slice(0,10);$('form-title').textContent='Fiche de prospection';$('save-btn').textContent='Enregistrer cette visite';}
-$('reset-btn').onclick=resetForm;
-$('shop-form').onsubmit=e=>{e.preventDefault();const id=$('edit-id').value;const item={id:id||String(Date.now()),shop:val('shop'),manager:val('manager'),phone:val('phone'),area:val('area'),category:val('category'),date:val('date'),interest:val('interest'),follow:val('follow'),objections:val('objections'),notes:val('notes')};if(id){records=records.map(r=>r.id===id?item:r)}else{records.unshift(item)}persist();resetForm();setTab('list')};
-function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function badge(i){if(i==='Intéressé'||i==='Prêt à discuter d’un test'||i==='Prêt à discuter d\\'un test'||i==='Partenariat à organiser')return 'good';if(i==='Souhaite réfléchir')return 'mid';return ''}
-function render(){const q=$('search').value.toLowerCase();const shown=records.filter(r=>(r.shop+' '+r.manager+' '+r.area+' '+r.category).toLowerCase().includes(q));$('count-tab').textContent=records.length?'('+records.length+')':'';$('total').textContent=records.length;$('interested').textContent=records.filter(r=>['Intéressé','Prêt à discuter d\\'un test','Partenariat à organiser'].includes(r.interest)).length;$('followups').textContent=records.filter(r=>r.follow).length;
-$('records').innerHTML=shown.length?shown.map(r=>`<article class="record"><div><h3>${esc(r.shop)}</h3><p>${esc([r.category,r.area].filter(Boolean).join(' · ')||'Catégorie / emplacement non précisés')}</p><p>${esc(r.manager||'Responsable non renseigné')} ${r.phone?'· '+esc(r.phone):''}</p><p>${r.date?'Visite : '+esc(r.date):''} ${r.follow?'· À faire : '+esc(r.follow):''}</p><span class="pill ${badge(r.interest)}">${esc(r.interest||'Intérêt à déterminer')}</span></div><div class="record-actions"><button type="button" data-edit="${esc(r.id)}">Modifier</button><button type="button" data-delete="${esc(r.id)}" aria-label="Supprimer">Supprimer</button></div></article>`).join(''):'<div class="empty">Aucune boutique enregistrée pour le moment.<br>Appuie sur « Nouvelle visite » pour commencer.</div>'}
-$('search').addEventListener('input',render);
-$('records').addEventListener('click',e=>{const edit=e.target.dataset.edit,del=e.target.dataset.delete;if(edit){const r=records.find(x=>x.id===edit);if(!r)return;for(const k of ['shop','manager','phone','area','category','date','interest','follow','objections','notes'])$(k).value=r[k]||'';$('edit-id').value=r.id;$('form-title').textContent='Modifier la fiche';$('save-btn').textContent='Enregistrer les modifications';setTab('form');window.scrollTo({top:0,behavior:'smooth'})}if(del&&confirm('Supprimer cette fiche ? Cette action est définitive.')){records=records.filter(r=>r.id!==del);persist()}});
-$('export-btn').onclick=()=>{const cols=['shop','manager','phone','area','category','date','interest','follow','objections','notes'];const csv=[cols.join(';'),...records.map(r=>cols.map(k=>'"'+String(r[k]||'').replace(/"/g,'""')+'"').join(';'))].join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='fiausse-suivi-boutiques.csv';a.click();URL.revokeObjectURL(a.href)};
-render();
+(function(){
+"use strict";
+var KEY="fiausse_boutiques_v2", shops=[];
+var $=function(id){return document.getElementById(id);};
+
+function notice(msg,error){
+ var n=$("notice"); n.textContent=msg; n.className="notice show "+(error?"err":"ok");
+ clearTimeout(notice.t); notice.t=setTimeout(function(){n.className="notice"},3500);
+}
+function id(){return Date.now()+"_"+Math.random().toString(36).slice(2,8);}
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function storageOK(){try{localStorage.setItem("__f","1");localStorage.removeItem("__f");return true}catch(e){return false;}}
+function load(){
+ try{
+  var raw=localStorage.getItem(KEY);
+  if(!raw) raw=localStorage.getItem("fiausse_prospection_v1");
+  shops=raw?JSON.parse(raw):[];
+  if(!Array.isArray(shops)) shops=[];
+ }catch(e){shops=[];notice("Impossible de lire les données sauvegardées.",true);}
+}
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify(shops));return true}
+ catch(e){notice("La sauvegarde est bloquée par ce navigateur.",true);return false}
+}
+function cls(s){
+ if(s==="Intéressé"||s==="Prêt à discuter d'un test"||s==="Partenariat à organiser")return"green";
+ if(s==="Souhaite réfléchir")return"orange";
+ if(s==="Pas intéressé")return"red";
+ return"";
+}
+function dateFr(v){if(!v)return"—";var p=v.split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:v;}
+function render(){
+ $("total").textContent=shops.length;
+ $("interested").textContent=shops.filter(function(x){return x.interest==="Intéressé"||x.interest==="Prêt à discuter d'un test"||x.interest==="Partenariat à organiser"}).length;
+ $("tests").textContent=shops.filter(function(x){return x.interest==="Prêt à discuter d'un test"}).length;
+ $("partners").textContent=shops.filter(function(x){return x.interest==="Partenariat à organiser"}).length;
+ var q=$("search").value.toLowerCase().trim();
+ var data=shops.filter(function(x){return !q || [x.name,x.manager,x.phone,x.location,x.category,x.interest,x.nextStep,x.objections,x.notes].join(" ").toLowerCase().indexOf(q)>=0;});
+ if(!data.length){$("list").innerHTML='<div class="empty">'+(shops.length?'Aucune boutique ne correspond à la recherche.':'<strong>Aucune boutique enregistrée.</strong><br><br>Commence par créer ta première fiche.')+'</div>';return;}
+ $("list").innerHTML=data.map(function(x){
+  var extra="";
+  if(x.objections)extra+="<strong>Objections / questions</strong><br>"+esc(x.objections);
+  if(x.notes)extra+=(extra?"<br><br>":"")+"<strong>Notes</strong><br>"+esc(x.notes);
+  return '<article class="shop"><div class="head"><div><div class="name">'+esc(x.name)+'</div><div class="meta">'+esc(x.location||"Emplacement non renseigné")+'</div></div><span class="badge '+cls(x.interest)+'">'+esc(x.interest||"Non renseigné")+'</span></div>'+
+  '<div class="details"><div class="detail"><strong>Responsable</strong>'+esc(x.manager||"—")+'</div><div class="detail"><strong>Téléphone / WhatsApp</strong>'+esc(x.phone||"—")+'</div><div class="detail"><strong>Catégorie</strong>'+esc(x.category||"—")+'</div><div class="detail"><strong>Date</strong>'+esc(dateFr(x.date))+'</div><div class="detail"><strong>Prochaine étape</strong>'+esc(x.nextStep||"—")+'</div></div>'+
+  (extra?'<div class="notes">'+extra+'</div>':'')+
+  '<div class="shop-actions"><button class="small" data-edit="'+esc(x.id)+'">Modifier</button><button class="small" data-delete="'+esc(x.id)+'">Supprimer</button></div></article>';
+ }).join("");
+ document.querySelectorAll("[data-edit]").forEach(function(b){b.onclick=function(){edit(b.dataset.edit)}});
+ document.querySelectorAll("[data-delete]").forEach(function(b){b.onclick=function(){del(b.dataset.delete)}});
+}
+function show(view){
+ var form=view==="form";
+ $("formView").classList.toggle("hidden",!form);$("listView").classList.toggle("hidden",form);
+ $("newTab").classList.toggle("active",form);$("listTab").classList.toggle("active",!form);
+ if(!form)render();
+}
+function reset(){
+ $("form").reset();$("editId").value="";$("date").value=today();$("formTitle").textContent="Nouvelle boutique";$("saveBtn").textContent="Enregistrer la boutique";
+}
+function edit(key){
+ var x=shops.find(function(s){return String(s.id)===String(key)});if(!x)return;
+ $("editId").value=x.id;$("name").value=x.name||"";$("manager").value=x.manager||"";$("phone").value=x.phone||"";$("location").value=x.location||"";
+ $("category").value=x.category||"";$("date").value=x.date||today();$("interest").value=x.interest||"";$("nextStep").value=x.nextStep||"";
+ $("objections").value=x.objections||"";$("notes").value=x.notes||"";$("formTitle").textContent="Modifier la boutique";$("saveBtn").textContent="Enregistrer les modifications";show("form");window.scrollTo(0,0);
+}
+function del(key){
+ var x=shops.find(function(s){return String(s.id)===String(key)});if(!x)return;
+ if(!confirm("Supprimer la fiche « "+x.name+" » ?"))return;
+ shops=shops.filter(function(s){return String(s.id)!==String(key)});if(save()){render();notice("Boutique supprimée.");}
+}
+$("newTab").onclick=function(){show("form")};$("listTab").onclick=function(){show("list")};$("resetBtn").onclick=reset;$("search").oninput=render;
+$("form").onsubmit=function(e){
+ e.preventDefault();
+ var x={id:$("editId").value||id(),name:$("name").value.trim(),manager:$("manager").value.trim(),phone:$("phone").value.trim(),location:$("location").value.trim(),category:$("category").value,date:$("date").value,interest:$("interest").value,nextStep:$("nextStep").value.trim(),objections:$("objections").value.trim(),notes:$("notes").value.trim()};
+ if(!x.name){notice("Le nom de la boutique est obligatoire.",true);$("name").focus();return;}
+ var editing=!!$("editId").value;
+ if(editing)shops=shops.map(function(s){return String(s.id)===String(x.id)?x:s});else shops.unshift(x);
+ if(save()){reset();show("list");notice(editing?"Boutique modifiée avec succès.":"Boutique enregistrée avec succès.");}
+};
+$("clear").onclick=function(){if(!shops.length){notice("Aucune boutique à supprimer.",true);return}if(confirm("Supprimer toutes les boutiques de cet appareil ?")){shops=[];if(save()){render();notice("Toutes les boutiques ont été supprimées.")}}};
+$("export").onclick=function(){
+ if(!shops.length){notice("Aucune boutique à exporter.",true);return}
+ var h=["Nom","Responsable","Téléphone","Quartier","Catégorie","Date","Intérêt","Prochaine étape","Objections","Notes"];
+ var rows=shops.map(function(x){return[x.name,x.manager,x.phone,x.location,x.category,x.date,x.interest,x.nextStep,x.objections,x.notes]});
+ function c(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'}
+ var csv="\ufeff"+h.map(c).join(";")+"\n"+rows.map(function(r){return r.map(c).join(";")}).join("\n");
+ var a=document.createElement("a"),u=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.href=u;a.download="fiausse_boutiques.csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
+};
+$("date").value=today();
+if(!storageOK())notice("La sauvegarde locale est indisponible dans ce navigateur.",true);else load();
+})();
 </script>
-</body></html>
+</body>
+</html>
