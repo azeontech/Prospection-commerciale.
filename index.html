@@ -21,13 +21,11 @@ label{font-size:14px;font-weight:700}input,select,textarea{width:100%;padding:12
 .notice{display:none;padding:12px 14px;margin:16px 0;border-radius:9px;font-weight:700}.notice.show{display:block}.ok{background:#dcfce7;color:#166534}.err{background:#fee2e2;color:#991b1b}
 .hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}.stat{padding:15px}.num{font-size:25px;font-weight:900}.lbl{font-size:13px;color:var(--muted)}
 
-/* Graphique */
 .analytics-container{display:grid;grid-template-columns:1fr 300px;gap:15px;margin-bottom:15px;align-items:center}
 .chart-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:15px;display:flex;flex-direction:column;align-items:center}
 .chart-box h3{margin:0 0 10px 0;font-size:15px;color:var(--text)}
 .chart-wrapper{width:100%;max-width:220px;height:220px}
 
-/* Accordéon / Boutiques déroulables */
 .toolbar{margin-top:0}.toolbar input{flex:1;min-width:220px}.shop-list{display:grid;gap:12px}
 .shop{padding:16px;cursor:pointer;transition:background-color .2s}
 .shop:hover{background-color:#f8fafc}
@@ -114,7 +112,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
 
 // --- CONFIGURATION SUPABASE ---
 var SUPABASE_URL = "https://jbxebdpurxeojyjcprpg.supabase.co";
-var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI"; // Mettez votre clé publique ici
+var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpieGViZHB1cnhlb2p5amNwcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTM3MjksImV4cCI6MjEwNjc2OTcyOX0.fNtNTeDCAzYKZzcJMWnPKNPjqO_SRUZ3W6tcA0LdesI" ; // <-- Remplacez ici par la clé publiable
 
 var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var shops = [];
@@ -132,7 +130,7 @@ function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"
 async function load(){
   var res = await sb.from("boutiques").select("*").order("created_at", { ascending: false });
   if(res.error){
-    notice("Erreur lors du chargement depuis Supabase.", true);
+    notice("Erreur lors du chargement depuis Supabase : " + res.error.message, true);
   } else {
     shops = res.data || [];
     render();
@@ -148,7 +146,9 @@ function cls(s){
 function dateFr(v){if(!v)return"—";var p=v.split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:v;}
 
 function updateChart(positives, neutral, negatives) {
-  var ctx = $("interestChart").getContext("2d");
+  var canvas = $("interestChart");
+  if (!canvas) return;
+  var ctx = canvas.getContext("2d");
   if (myChart) myChart.destroy();
   myChart = new Chart(ctx, {
     type: 'doughnut',
@@ -243,7 +243,7 @@ window.del = async function(key){
  if(!confirm("Supprimer la fiche « "+x.name+" » ?"))return;
  var res = await sb.from("boutiques").delete().eq("id", key);
  if(res.error){
-   notice("Erreur de suppression.", true);
+   notice("Erreur de suppression : " + res.error.message, true);
  } else {
    notice("Boutique supprimée.");
    load();
@@ -306,7 +306,7 @@ $("export").onclick=function(){
  var h=["Nom","Responsable","Téléphone","Quartier","Catégorie","Date","Intérêt","Prochaine étape","Objections","Notes"];
  var rows=shops.map(function(x){return[x.name,x.manager,x.phone,x.location,x.category,x.date,x.interest,x.nextStep,x.objections,x.notes]});
  function c(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'}
- var csv="\ufeff"+h.map(c].join(";")+"\n"+rows.map(function(r){return r.map(c).join(";")}).join("\n");
+ var csv="\ufeff"+h.map(c).join(";")+"\n"+rows.map(function(r){return r.map(c).join(";")}).join("\n");
  var a=document.createElement("a"),u=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.href=u;a.download="fiausse_boutiques.csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
 };
 
